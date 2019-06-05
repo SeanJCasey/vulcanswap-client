@@ -94,18 +94,20 @@ class OrderBuilderContainer extends Component {
       <div className="orderBuilderContainer">
         <h2>Create an Order</h2>
         <div className="row">
-          <div className="col-sm-8">
+          <div className="col-sm-6 col-md-7 col-lg-8">
             <OrderForm
               formErrors={this.state.formErrors}
               onSubmit={this.handleSubmit}
               onInputChange={this.handleInputChange}
             />
           </div>
-          <div className="col-sm-4">
-            <TokenLiquidityBlock
-              targetTokenAddress={this.state.newOrderInputs.tokenAddress}
-            />
-          </div>
+          {this.state.newOrderInputs.tokenAddress &&
+            <div className="col-sm-6 col-md-5 col-lg-4">
+              <TokenLiquidityBlock
+                targetTokenAddress={this.state.newOrderInputs.tokenAddress}
+              />
+            </div>
+          }
         </div>
       </div>
     );

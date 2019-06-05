@@ -15,9 +15,34 @@ body {
       padding: 15px 25px;
       border-radius: 10px;
       font-size: 16px;
+      text-align: center;
       h3 {
-        text-align: center;
         margin-bottom: 20px;
+      }
+      .tokenLiquidityBlockInner {
+        position: relative;
+        height: 100%;
+        .tokenLiquidityDetails {
+          .detail {
+            margin-bottom: 10px;
+            label {
+              font-weight: 600;
+              display: block;
+              margin-bottom: 0;
+            }
+          }
+        }
+        .block-footer {
+          @include media-breakpoint-up(sm) {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+          }
+        }
+        .liquidity-provider {
+          font-size: 14px;
+          font-style: italic;
+        }
       }
     }
   }

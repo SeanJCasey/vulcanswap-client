@@ -18,9 +18,9 @@ class TokenLiquidityBlock extends Component {
     }
   }
 
-  // componentDidMount() {
-  //   this.updateExchange();
-  // }
+  componentDidMount() {
+    this.updateExchange();
+  }
 
   componentDidUpdate(prevProps) {
     if (this.props.targetTokenAddress !== prevProps.targetTokenAddress) {
@@ -70,14 +70,30 @@ class TokenLiquidityBlock extends Component {
 
     return (
       <div className="tokenLiquidityBlock">
-        <h3>Uniswap liquidity Info</h3>
-        {token &&
-          <div className="tokenLiquidityDetails">
-            <p>Token: {token.name} ({token.symbol})</p>
-            <p>Current Rate: {exchangeData.ratePerEth} {token.symbol} per ETH</p>
-            <p>Current Liquidity: {exchangeData.totalEth} ETH</p>
+        <div className="tokenLiquidityBlockInner">
+          <h3>Liquidity Pool</h3>
+          {token &&
+            <div className="tokenLiquidityDetails">
+              <div className="detail tokenName">
+                <label>Token:</label>
+                  {token.name} ({token.symbol})
+              </div>
+              <div className="detail tokenRate">
+                <label>Current Rate:</label>
+                {exchangeData.ratePerEth} {token.symbol} / ETH
+              </div>
+              <div className="detail tokenLiquidity">
+                <label>Current Liquidity:</label>
+                {exchangeData.totalEth} ETH
+              </div>
+            </div>
+          }
+          <div className="block-footer">
+            <div className="liquidity-provider">
+              Liquidity by Uniswap
+            </div>
           </div>
-        }
+        </div>
       </div>
     );
   }
