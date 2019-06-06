@@ -7,6 +7,20 @@ body {
 }
 
 .App {
+  .navbar {
+    .accountAddress {
+      display: inline-block;
+      width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: $gray-200;
+      vertical-align: middle;
+      svg {
+        margin-right: 5px;
+      }
+    }
+  }
   .orderBuilderContainer {
     margin-top: 30px;
     .tokenLiquidityBlock {

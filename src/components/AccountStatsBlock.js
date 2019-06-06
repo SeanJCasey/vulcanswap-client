@@ -53,9 +53,6 @@ class AccountStatsBlock extends Component {
     return (
       <div className="accountStatsBlock">
         <strong>Your account</strong>
-        <div className="address">
-          {drizzleState.accounts[0]}
-        </div>
         <div className="balance">
           ETH available: {drizzle.web3.utils.fromWei(ethBalance.toString(), 'ether')} ETH
         </div>
