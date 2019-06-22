@@ -9,11 +9,11 @@ class AdminOptionsBlock extends Component {
 
     return (
       <div className="adminOptionsBlock">
-
+        <h2>Admin Options</h2>
         <div className="section">
-          <h2>Fees and Balance</h2>
-          <div className="withdrawFees">
-            <h3>Withdraw Fees</h3>
+          <h3>Fees and Balance</h3>
+          <div className="option withdrawFees">
+            <h4>Withdraw Fees</h4>
             <strong>Fee Balance: </strong>
             <ContractData
               contract="CostAverageOrderBook"
@@ -32,9 +32,9 @@ class AdminOptionsBlock extends Component {
         </div>
 
         <div className="section">
-          <h2>Access and Ownership</h2>
-          <div className="owner">
-            <h3>Transfer Ownership</h3>
+          <h3>Access and Ownership</h3>
+          <div className="option owner">
+            <h4>Transfer Ownership</h4>
             <ContractForm
               contract="CostAverageOrderBook"
               method="transferOwnership"
@@ -42,8 +42,8 @@ class AdminOptionsBlock extends Component {
               drizzleState={drizzleState}
             />
           </div>
-          <div className="remote-caller">
-            <h3>Change Remote Caller</h3>
+          <div className="option emote-caller">
+            <h4>Change Remote Caller</h4>
             <ContractForm
               contract="CostAverageOrderBook"
               method="setRemoteCaller"
@@ -54,9 +54,9 @@ class AdminOptionsBlock extends Component {
         </div>
 
         <div className="section">
-          <h2>Min/max values</h2>
-          <div className="amount">
-            <h3>Amount</h3>
+          <h3>Order Min/Max Values</h3>
+          <div className="option amount">
+            <h4>Amount</h4>
             <strong>Min: </strong>
             <ContractData
               contract="CostAverageOrderBook"
@@ -73,8 +73,8 @@ class AdminOptionsBlock extends Component {
               drizzleState={drizzleState}
             />
           </div>
-          <div className="batches">
-            <h3>Batches</h3>
+          <div className="option batches">
+            <h4>Batches</h4>
             <strong>Min: </strong>
             <ContractData
               contract="CostAverageOrderBook"
@@ -102,8 +102,8 @@ class AdminOptionsBlock extends Component {
               drizzleState={drizzleState}
             />
           </div>
-          <div className="frequency">
-            <h3>Frequency</h3>
+          <div className="option frequency">
+            <h4>Frequency</h4>
             <strong>Min: </strong>
             <ContractData
               contract="CostAverageOrderBook"

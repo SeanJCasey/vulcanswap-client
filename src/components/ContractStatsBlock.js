@@ -37,7 +37,7 @@ class ContractStatsBlock extends Component {
 
     return (
       <div className="contractStatsBlock">
-        <strong>Vulcanizer totals</strong>
+        <h2>Contract Stats</h2>
         <div className="orders">
           Orders created: {statTotals && statTotals.value.orders_}
         </div>
