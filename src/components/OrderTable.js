@@ -54,7 +54,7 @@ class OrderTable extends Component {
   }
 
   render() {
-    const { drizzle, drizzleState } = this.context;;
+    const { drizzle, drizzleState } = this.context;
     const { orderKeys } = this.state;
 
     let orders = [];
