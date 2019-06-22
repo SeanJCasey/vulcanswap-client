@@ -16,7 +16,7 @@ class CostAverageOrderBookPage extends Component {
     return (
       <div className="costAverageOrderBook">
         <div className="container">
-          <h1>Ethereum Cost Average Orders</h1>
+          <h1>Cost-Average Order Builder</h1>
           <StatsContainer />
           <OrderBuilderContainer />
           <OrderTableContainer />
