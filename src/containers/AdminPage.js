@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { DrizzleContext } from "drizzle-react";
 
 import AdminOptionsBlock from '../components/AdminOptionsBlock';
+import ContractStatsBlock from "../components/ContractStatsBlock";
 
 class AdminPage extends Component {
   render() {
@@ -14,7 +15,8 @@ class AdminPage extends Component {
     return (
       <div className="adminPage">
         <div className="container">
-          <h1>Admin Options</h1>
+          <h1>Administration</h1>
+          <ContractStatsBlock />
           <AdminOptionsBlock />
         </div>
       </div>

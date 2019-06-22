@@ -4,11 +4,11 @@ import { TOKENTABLE, TIMETABLE } from '../constants';
 const OrderForm = ({ formErrors, onInputChange, onSubmit }) =>
   <form id="createCostAverageOrderForm" onSubmit={onSubmit}>
     <div className="form-group">
-      <label htmlFor="createCostAverageOrderQuantityInput">Amount to Convert</label>
+      <label htmlFor="createCostAverageOrderQuantityInput">Swap Amount</label>
       <input
         name="quantity"
         type="text"
-        placeholder="No of ETH"
+        placeholder="Number of ETH"
         className={`form-control ${formErrors && formErrors.quantity ? 'is-invalid' : ''}`}
         id="createCostAverageOrderQuantityInput"
         onChange={onInputChange}
@@ -21,7 +21,7 @@ const OrderForm = ({ formErrors, onInputChange, onSubmit }) =>
       }
     </div>
     <div className="form-group">
-      <label htmlFor="createCostAverageOrderTokenAddressInput">Target Currency</label>
+      <label htmlFor="createCostAverageOrderTokenAddressInput">To ERC20 Token</label>
       <select
         name="tokenAddress"
         className="form-control"
@@ -37,7 +37,7 @@ const OrderForm = ({ formErrors, onInputChange, onSubmit }) =>
       </select>
     </div>
     <div className="form-group">
-      <label htmlFor="createCostAverageOrderFrequencyInput">Conversion Frequency</label>
+      <label htmlFor="createCostAverageOrderFrequencyInput">Swap Frequency</label>
       <select
         name="frequency"
         className="form-control"
@@ -53,11 +53,11 @@ const OrderForm = ({ formErrors, onInputChange, onSubmit }) =>
       </select>
     </div>
     <div className="form-group">
-      <label htmlFor="createCostAverageOrderTranchesInput">Batches</label>
+      <label htmlFor="createCostAverageOrderTranchesInput">Number of Swaps</label>
       <input
         name="batches"
         type="number"
-        placeholder="number of orders"
+        placeholder="Number of Orders"
         className={`form-control ${formErrors && formErrors.batches ? 'is-invalid' : ''}`}
         id="createCostAverageOrderTranchesInput"
         onChange={onInputChange}

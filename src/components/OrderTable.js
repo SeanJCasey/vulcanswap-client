@@ -123,7 +123,7 @@ class OrderTable extends Component {
       <div className="orderTables">
         {orders.length > 0 &&
           <div className="active-orders">
-            <h3>Active Orders</h3>
+            <h2>Active Orders</h2>
             <table className="table table-striped">
               <thead>
                 <tr>
@@ -145,7 +145,7 @@ class OrderTable extends Component {
         }
         {ordersFinished.length > 0 &&
           <div className="archived-orders">
-          <h3>Archived Orders</h3>
+          <h2>Archived Orders</h2>
             <table className="table table-striped">
               <thead>
                 <tr>

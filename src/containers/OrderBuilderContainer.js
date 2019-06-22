@@ -92,7 +92,7 @@ class OrderBuilderContainer extends Component {
   render() {
     return (
       <div className="orderBuilderContainer">
-        <h2>Create an Order</h2>
+        <h2>New Order</h2>
         <div className="row">
           <div className="col-sm-6 col-md-7 col-lg-8">
             <OrderForm

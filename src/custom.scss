@@ -2,6 +2,22 @@ h1, h2, h3, h4 {
   font-family: $headings-font-family;
 }
 
+h1 {
+  margin: 20px 0;
+}
+h2 {
+  font-size: 24px;
+  color: $primary;
+}
+h3 {
+  font-size: 18px;
+}
+h4 {
+  font-size: 14px;
+  text-decoration: underline;
+  // font-weight: bold;
+}
+
 body {
   font-size: 14px;
 }
@@ -21,64 +37,51 @@ body {
       }
     }
   }
-  .orderBuilderContainer {
-    margin-top: 30px;
-    .tokenLiquidityBlock {
-      height: 100%;
-      background-color: $gray-200;
-      padding: 15px 25px;
-      border-radius: 10px;
-      font-size: 16px;
-      text-align: center;
-      h3 {
-        margin-bottom: 20px;
-      }
-      .tokenLiquidityBlockInner {
-        position: relative;
+  .costAverageOrderBook {
+    .orderBuilderContainer {
+      margin-top: 30px;
+      .tokenLiquidityBlock {
         height: 100%;
-        .tokenLiquidityDetails {
-          .detail {
-            margin-bottom: 10px;
-            label {
-              font-weight: 600;
-              display: block;
-              margin-bottom: 0;
+        background-color: $gray-200;
+        padding: 15px 25px;
+        border-radius: 10px;
+        font-size: 16px;
+        text-align: center;
+        h3 {
+          margin-bottom: 20px;
+        }
+        .tokenLiquidityBlockInner {
+          position: relative;
+          height: 100%;
+          .tokenLiquidityDetails {
+            .detail {
+              margin-bottom: 10px;
+              label {
+                font-weight: 600;
+                display: block;
+                margin-bottom: 0;
+              }
             }
           }
-        }
-        .block-footer {
-          @include media-breakpoint-up(sm) {
-            position: absolute;
-            bottom: 10px;
-            width: 100%;
+          .block-footer {
+            @include media-breakpoint-up(sm) {
+              position: absolute;
+              bottom: 10px;
+              width: 100%;
+            }
           }
-        }
-        .liquidity-provider {
-          font-size: 14px;
-          font-style: italic;
+          .liquidity-provider {
+            font-size: 14px;
+            font-style: italic;
+          }
         }
       }
     }
-  }
-  .orderTableContainer {
-    margin-top: 30px;
+    .orderTableContainer {
+      margin-top: 30px;
+    }
   }
   .adminPage {
-    h1 {
-      margin: 20px 0;
-    }
-    h2 {
-      font-size: 24px;
-      color: $primary;
-    }
-    h3 {
-      font-size: 18px;
-    }
-    h4 {
-      font-size: 14px;
-      text-decoration: underline;
-      // font-weight: bold;
-    }
     .contractStatsBlock {
       margin-bottom: 20px;
     }
