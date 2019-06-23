@@ -4,6 +4,7 @@ import { DrizzleContext } from "drizzle-react";
 import StatsContainer from './StatsContainer';
 import OrderBuilderContainer from './OrderBuilderContainer';
 import OrderTableContainer from './OrderTableContainer';
+import TitleWrapper from '../components/TitleWrapper';
 
 class CostAverageOrderBookPage extends Component {
   render() {
@@ -15,8 +16,8 @@ class CostAverageOrderBookPage extends Component {
 
     return (
       <div className="costAverageOrderBook">
+        <TitleWrapper>Cost Average Order Builder</TitleWrapper>
         <div className="container">
-          <h1>Cost-Average Order Builder</h1>
           <StatsContainer />
           <OrderBuilderContainer />
           <OrderTableContainer />

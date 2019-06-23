@@ -3,7 +3,7 @@ h1, h2, h3, h4 {
 }
 
 h1 {
-  margin: 20px 0;
+  margin: 0;
 }
 h2 {
   font-size: 24px;
@@ -22,8 +22,24 @@ body {
   font-size: 14px;
 }
 
+.title-wrapper {
+  background-image: url("./resources/space.jpg");
+  padding: 20px 0;
+  color: $white;
+  text-shadow: 0.5px 0.5px $gray-200;
+  margin-bottom: 15px;
+}
+
 .App {
   .navbar {
+    .brand-wrapper {
+      .slogan {
+        display: inline-block;
+        color: $white;
+        font-style: italic;
+        margin-left: 10px;
+      }
+    }
     .accountAddress {
       display: inline-block;
       width: 150px;
@@ -40,6 +56,9 @@ body {
   .costAverageOrderBook {
     .orderBuilderContainer {
       margin-top: 30px;
+      h1 {
+        margin-bottom: 15px;
+      }
       .tokenLiquidityBlock {
         height: 100%;
         background-color: $gray-200;
@@ -78,7 +97,7 @@ body {
       }
     }
     .orderTableContainer {
-      margin-top: 30px;
+      margin-top: 40px;
     }
   }
   .adminPage {
