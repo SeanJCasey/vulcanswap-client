@@ -11,7 +11,10 @@ class Navbar extends Component {
     return (
       <nav className="navbar navbar-dark bg-dark">
         <div className="container">
-          <Link to={'/'} className="navbar-brand">Vulcan Swap 🖖</Link>
+          <div className="brand-wrapper">
+            <Link to={'/'} className="navbar-brand">Vulcan Swap <span role="img" aria-label="vulcan-hand">🖖</span></Link>
+            <div className="slogan">"Go long and prosper"</div>
+          </div>
           {initialized &&
             <div className="accountWrapper">
               <div className="accountAddress">
