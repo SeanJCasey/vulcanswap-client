@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { DrizzleContext } from "drizzle-react";
+import { DrizzleContext } from 'drizzle-react';
 
-import StatsContainer from './StatsContainer';
+import MainContentWrapper from '../components/MainContentWrapper';
+import AccountStatsBlock from '../components/AccountStatsBlock';
 import OrderBuilderContainer from './OrderBuilderContainer';
 import OrderTableContainer from './OrderTableContainer';
 import TitleWrapper from '../components/TitleWrapper';
@@ -17,11 +18,11 @@ class CostAverageOrderBookPage extends Component {
     return (
       <div className="costAverageOrderBook">
         <TitleWrapper>Cost Average Order Builder</TitleWrapper>
-        <div className="container">
-          <StatsContainer />
+        <MainContentWrapper>
+          <AccountStatsBlock />
           <OrderBuilderContainer />
           <OrderTableContainer />
-        </div>
+        </MainContentWrapper>
       </div>
     );
   }

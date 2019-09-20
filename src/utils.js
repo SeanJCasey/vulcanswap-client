@@ -1,3 +1,5 @@
+import { TOKENTABLES, UNISWAP_FACTORY_ADDRESSES } from './constants';
+
 export const dateObjDisplayFormatter = dateObj => {
     const year = dateObj.getUTCFullYear();
     const date = [dateObj.getUTCMonth() + 1, dateObj.getUTCDate()]
@@ -8,3 +10,9 @@ export const dateObjDisplayFormatter = dateObj => {
       .join(':');
     return `${year}-${date} ${time} UTC`;
 };
+
+export const getTokenTableForNetwork = networkId =>
+  TOKENTABLES[networkId];
+
+export const getUniswapFactoryAddress = networkId =>
+  UNISWAP_FACTORY_ADDRESSES[networkId];

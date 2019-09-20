@@ -3,15 +3,11 @@ import { DrizzleContext } from "drizzle-react";
 
 class AccountStatsBlock extends Component {
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      ethBalance: 0,
-      seanTokenBalanceKey: null,
-      moonTokenBalanceKey: null,
-      consensysTokenBalanceKey: null
-    }
+  state = {
+    ethBalance: 0,
+    seanTokenBalanceKey: null,
+    moonTokenBalanceKey: null,
+    consensysTokenBalanceKey: null
   }
 
   componentDidMount() {

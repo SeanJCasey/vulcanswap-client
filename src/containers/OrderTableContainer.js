@@ -4,13 +4,60 @@ import { DrizzleContext } from "drizzle-react";
 import OrderTable from "../components/OrderTable";
 
 class OrderTableContainer extends Component {
+  state = {
+    'orderCountKey': null,
+    'orderKeys': [],
+  }
+
+  componentDidMount() {
+    const { drizzle, drizzleState } = this.context;
+    const contract = drizzle.contracts.CostAverageOrderBook;
+
+    const orderCountKey = contract.methods["getOrderCountForAccount"].cacheCall(drizzleState.accounts[0]);
+
+    this.setState({ orderCountKey });
+  }
+
+  componentDidUpdate() {
+    this.getNewOrdersForUser();
+  }
+
+  getNewOrdersForUser() {
+    const { drizzle, drizzleState } = this.context;
+    const orderCount = drizzleState.contracts.CostAverageOrderBook.getOrderCountForAccount[this.state.orderCountKey];
+    const { orderKeys } = this.state;
+
+    if (orderCount && orderCount.value > orderKeys.length) {
+      const newOrderKeys = []
+      for (let i = orderKeys.length; i < orderCount.value; i++) {
+        newOrderKeys.push(drizzle.contracts.CostAverageOrderBook.methods["getOrderForAccountIndex"].cacheCall(drizzleState.accounts[0], i));
+      }
+      this.setState({ orderKeys: [...this.state.orderKeys, ...newOrderKeys] })
+    }
+  }
+
+  /* EVENT HANDLERS */
+  handleCancelOrderClick = event => {
+    const { drizzle } = this.context;
+    const orderId = event.target.value;
+    const contract = drizzle.contracts.CostAverageOrderBook;
+
+    contract.methods.cancelOrder(orderId).send()
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
+  }
+
   render() {
     const { drizzle, drizzleState } = this.context;
+    const { orderKeys } = this.state;
 
     return (
-      <div className="orderTableContainer">
-        <OrderTable drizzle={drizzle} drizzleState={drizzleState} />
-      </div>
+      <OrderTable
+        drizzle={drizzle}
+        drizzleState={drizzleState}
+        onCancelOrderClick={this.handleCancelOrderClick}
+        orderKeys={orderKeys}
+      />
     );
   }
 }

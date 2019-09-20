@@ -1,30 +1,20 @@
 import React, { Component } from 'react';
-import { DrizzleContext } from "drizzle-react";
+import { DrizzleContext } from 'drizzle-react';
 
-import OrderForm from "../components/OrderForm";
-import TokenLiquidityBlock from "../components/TokenLiquidityBlock";
-
+import OrderBuilderBlock from '../components/OrderBuilderBlock';
 
 class OrderBuilderContainer extends Component {
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      'newOrderInputs': {
-        'tokenAddress': '',
-        'quantity': '',
-        'frequency': '',
-        'batches': ''
-      },
-      'newOrderStackId': '',
-      'orderParamLimitsKey': null,
-      'formErrors': {}
-    };
-
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
+  state = {
+    'newOrderInputs': {
+      'tokenAddress': '',
+      'quantity': '',
+      'frequency': '',
+      'batches': ''
+    },
+    'newOrderStackId': '',
+    'orderParamLimitsKey': null,
+    'formErrors': {}
+  };
 
   componentDidMount() {
     const { drizzle } = this.context;
@@ -51,7 +41,7 @@ class OrderBuilderContainer extends Component {
     this.setState({ newOrderStackId });
   }
 
-  handleFormValidation() {
+  validateOrderForm() {
     const { orderParamLimitsKey } = this.state;
     const { drizzle, drizzleState } = this.context;
     const orderParamLimits = drizzleState.contracts.CostAverageOrderBook.getOrderParamLimits[orderParamLimitsKey];
@@ -67,7 +57,8 @@ class OrderBuilderContainer extends Component {
     return formErrors;
   }
 
-  handleInputChange(event) {
+  /* EVENT HANDLERS */
+  handleOrderInputChange = event => {
     this.setState({
       newOrderInputs: {
         ...this.state.newOrderInputs,
@@ -76,10 +67,8 @@ class OrderBuilderContainer extends Component {
     });
   }
 
-  handleSubmit(event) {
-    event.preventDefault();
-
-    const formErrors = this.handleFormValidation();
+  handleOrderSubmitClick = event => {
+    const formErrors = this.validateOrderForm();
 
     if (Object.keys(formErrors).length) {
       this.setState({ formErrors });
@@ -90,26 +79,19 @@ class OrderBuilderContainer extends Component {
   }
 
   render() {
+    const { formErrors, newOrderInputs } = this.state;
+    const { drizzle } = this.context;
+
+    const networkId = drizzle.store.getState().web3.networkId;
+
     return (
-      <div className="orderBuilderContainer">
-        <h2>New Order</h2>
-        <div className="row">
-          <div className="col-sm-6 col-md-7 col-lg-8">
-            <OrderForm
-              formErrors={this.state.formErrors}
-              onSubmit={this.handleSubmit}
-              onInputChange={this.handleInputChange}
-            />
-          </div>
-          {this.state.newOrderInputs.tokenAddress &&
-            <div className="col-sm-6 col-md-5 col-lg-4">
-              <TokenLiquidityBlock
-                targetTokenAddress={this.state.newOrderInputs.tokenAddress}
-              />
-            </div>
-          }
-        </div>
-      </div>
+      <OrderBuilderBlock
+        formErrors={formErrors}
+        networkId={networkId}
+        newOrderInputs={newOrderInputs}
+        onOrderInputChange={this.handleOrderInputChange}
+        onOrderSubmitClick={this.handleOrderSubmitClick}
+      />
     );
   }
 }

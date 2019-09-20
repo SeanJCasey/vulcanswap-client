@@ -1,64 +1,64 @@
-import React, { Component } from 'react';
-import { DrizzleContext } from "drizzle-react";
+import React from 'react';
 
-import { TOKENTABLE, TIMETABLE } from '../constants';
-import { dateObjDisplayFormatter } from '../utils';
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 
-class OrderTable extends Component {
-  constructor(props) {
-    super(props);
+import { TIMETABLE } from '../constants';
+import { dateObjDisplayFormatter, getTokenTableForNetwork } from '../utils';
 
-    this.state = {
-      'orderCountKey': null,
-      'orderKeys': [],
+const useStyles = makeStyles({
+  ordersActiveWrapper: {},
+  ordersArchivedWrapper: {},
+  root: {},
+  tableCell: {}
+});
+
+const OrderTable = props => {
+  const classes = useStyles(props);
+  const { drizzle, drizzleState, onCancelOrderClick, orderKeys } = props;
+
+  const tokenTable = getTokenTableForNetwork(drizzle.store.getState().web3.networkId);
+
+  const getOrdersColLabels = type => {
+    switch (type) {
+      case 'archived':
+        return ["Order #", "No of ETH", "Target Token", "Frequency", "Batches", "Converted", "Last Trade", "Status"];
+      case 'active':
+      default:
+        return ["Order #", "No of ETH", "Target Token", "Frequency", "Batches", "Converted", "Last Trade", "Next Trade"];
     }
+  };
 
-    this.handleCancelOrderClick = this.handleCancelOrderClick.bind(this);
-  }
+  const getOrderTableValues = (order, type) => {
+    const amount = order.amount;
+    const batchesExecuted = `${order.batchesExecuted} / ${order.batches}`;
+    const conversionLast = order.lastConversionTimestamp > 0 ? dateObjDisplayFormatter(new Date(order.lastConversionTimestamp * 1000)) : "n/a";
+    const conversionNext = order.nextConversionTimestamp > 0 ? dateObjDisplayFormatter(new Date(order.nextConversionTimestamp * 1000)) : "overdue!";
+    const id = order.id;
+    const frequency = TIMETABLE[order.frequency] ? TIMETABLE[order.frequency] : `${order.frequency} seconds`;
+    const targetCurrency = tokenTable[order.targetCurrency] ? tokenTable[order.targetCurrency].name : order.targetCurrency;
+    const targetCurrencyConverted = `${order.targetCurrencyConverted} ${tokenTable[order.targetCurrency] ? tokenTable[order.targetCurrency].symbol : ""}`;
+    const status = order.batchesExecuted < order.batches ? "cancelled" : "completed";
 
-  componentDidMount() {
-    const { drizzle, drizzleState } = this.context;
-    const contract = drizzle.contracts.CostAverageOrderBook;
+    switch (type) {
+      case 'archived':
+        return [id, amount, targetCurrency, frequency, batchesExecuted, targetCurrencyConverted, conversionLast, status];
+      case 'active':
+      default:
+        return [id, amount, targetCurrency, frequency, batchesExecuted, targetCurrencyConverted, conversionLast, conversionNext];
 
-    const orderCountKey = contract.methods["getOrderCountForAccount"].cacheCall(drizzleState.accounts[0]);
-
-    this.setState({ orderCountKey });
-  }
-
-  componentDidUpdate() {
-    this.getNewOrdersForUser();
-  }
-
-  getNewOrdersForUser() {
-    const { drizzle, drizzleState } = this.context;
-    const orderCount = drizzleState.contracts.CostAverageOrderBook.getOrderCountForAccount[this.state.orderCountKey];
-    const { orderKeys } = this.state;
-
-    if (orderCount && orderCount.value > orderKeys.length) {
-      const newOrderKeys = []
-      for (let i = orderKeys.length; i < orderCount.value; i++) {
-        newOrderKeys.push(drizzle.contracts.CostAverageOrderBook.methods["getOrderForAccountIndex"].cacheCall(drizzleState.accounts[0], i));
-      }
-      this.setState({ orderKeys: [...this.state.orderKeys, ...newOrderKeys] })
     }
-  }
+  };
 
-  handleCancelOrderClick(event) {
-    const { drizzle } = this.context;
-    const orderId = event.target.value;
-    const contract = drizzle.contracts.CostAverageOrderBook;
-
-    contract.methods.cancelOrder(orderId).send()
-      .then(res => console.log(res))
-      .catch(err => console.log(err));
-  }
-
-  render() {
-    const { drizzle, drizzleState } = this.context;
-    const { orderKeys } = this.state;
-
+  const getFormattedOrders = () => {
     let orders = [];
-    let ordersFinished = [];
     for (const orderKey of orderKeys) {
       const orderState = drizzleState.contracts.CostAverageOrderBook.getOrderForAccountIndex[orderKey];
       if (orderState) {
@@ -74,102 +74,103 @@ class OrderTable extends Component {
           'sourceCurrencyBalance': Number(orderState.value.sourceCurrencyBalance_)
         }
         order['nextConversionTimestamp'] = order['lastConversionTimestamp'] > 0 ? order['lastConversionTimestamp'] + order['frequency'] : 0;
-        order['isActive'] = order['sourceCurrencyBalance'] > 0;
-        order['isActive'] ? orders.push(order) : ordersFinished.push(order);
+        orders.push(order);
       }
     }
-    const activeOrderMap = orders.map((order, i) => {
-      return (
-        <tr key={order.id}>
-          <td>{order.id}</td>
-          <td>{order.amount}</td>
-          <td>{TOKENTABLE[order.targetCurrency] ? TOKENTABLE[order.targetCurrency].name : order.targetCurrency}</td>
-          <td>{TIMETABLE[order.frequency] ? TIMETABLE[order.frequency] : `${order.frequency} seconds `}</td>
-          <td>{order.batchesExecuted} / {order.batches}</td>
-          <td>{order.targetCurrencyConverted} {TOKENTABLE[order.targetCurrency] ? TOKENTABLE[order.targetCurrency].symbol : ""}</td>
-          <td>{order.lastConversionTimestamp > 0 ? dateObjDisplayFormatter(new Date(order.lastConversionTimestamp * 1000)) : "n/a"}</td>
-          <td>{order.nextConversionTimestamp > 0 ? dateObjDisplayFormatter(new Date(order.nextConversionTimestamp * 1000)) : "overdue!"}</td>
-          <td>
-            <button
-              className="btn btn-outline-danger btn-sm"
-              value={order.id}
-              style={{ padding: "0px 5px" }}
-              onClick={this.handleCancelOrderClick}
-            >
-              Cancel
-            </button>
-          </td>
-        </tr>
-      );
-    })
-    const archivedOrderMap = ordersFinished.map((order, i) => {
-      return (
-        <tr key={order.id}>
-          <td>{order.id}</td>
-          <td>{order.amount}</td>
-          <td>{TOKENTABLE[order.targetCurrency] ? TOKENTABLE[order.targetCurrency].name : order.targetCurrency}</td>
-          <td>{TIMETABLE[order.frequency] ? TIMETABLE[order.frequency] : `${order.frequency} seconds `}</td>
-          <td>{order.batchesExecuted} / {order.batches}</td>
-          <td>{order.targetCurrencyConverted} {TOKENTABLE[order.targetCurrency] ? TOKENTABLE[order.targetCurrency].symbol : ""}</td>
-          <td>{order.lastConversionTimestamp > 0 ? dateObjDisplayFormatter(new Date(order.lastConversionTimestamp * 1000)) : "n/a"}</td>
-          <td>{order.batchesExecuted < order.batches ? 'cancelled' : 'completed'}</td>
-        </tr>
-      );
-    })
-
-    if (!(orders.length > 0 || ordersFinished.length > 0)) return(<div></div>);
-
-    return (
-      <div className="orderTables">
-        {orders.length > 0 &&
-          <div className="active-orders">
-            <h2>Active Orders</h2>
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th scope="col">Order #</th>
-                  <th scope="col">No of ETH</th>
-                  <th scope="col">Target Token</th>
-                  <th scope="col">Frequency</th>
-                  <th scope="col">Batches</th>
-                  <th scope="col">Converted</th>
-                  <th scope="col">Last Trade</th>
-                  <th scope="col">Next Trade</th>
-                </tr>
-              </thead>
-              <tbody>
-                {activeOrderMap}
-              </tbody>
-            </table>
-          </div>
-        }
-        {ordersFinished.length > 0 &&
-          <div className="archived-orders">
-          <h2>Archived Orders</h2>
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th scope="col">Order #</th>
-                  <th scope="col">No of ETH</th>
-                  <th scope="col">Target Token</th>
-                  <th scope="col">Frequency</th>
-                  <th scope="col">Batches</th>
-                  <th scope="col">Converted</th>
-                  <th scope="col">Last Trade</th>
-                  <th scope="col">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {archivedOrderMap}
-              </tbody>
-            </table>
-          </div>
-        }
-      </div>
-    );
+    return orders;
   }
-}
 
-OrderTable.contextType = DrizzleContext.Context;
+  const renderOrdersActive = orders =>
+    ordersActive.map((order, i) =>
+      <TableRow key={order.id}>
+        {getOrderTableValues(order, 'active').map((value, j) =>
+          <TableCell
+            key={j}
+            align="center"
+            padding="none"
+            className={classes.tableCell}
+          >
+            {value}
+          </TableCell>
+        )}
+        <TableCell>
+          <Button
+            onClick={onCancelOrderClick}
+            value={order.id}
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+        </TableCell>
+      </TableRow>
+    );
+
+  const renderOrdersArchived = orders =>
+    ordersArchived.map((order, i) =>
+      <TableRow key={order.id}>
+        {getOrderTableValues(order, 'archived').map((value, j) =>
+          <TableCell
+            key={j}
+            align="center"
+            padding="none"
+            className={classes.tableCell}
+          >
+            {value}
+          </TableCell>
+        )}
+      </TableRow>
+    );
+
+  const renderOrdersTableHead = type =>
+    <TableRow>
+      {getOrdersColLabels(type).map((label, i) =>
+        <TableCell
+          key={label}
+          align="center"
+          padding="none"
+          className={classes.tableCell}
+        >
+          {label}
+        </TableCell>
+      )}
+    </TableRow>
+
+  const orders = getFormattedOrders();
+  if (!(orders.length > 0)) return null;
+
+  const ordersActive = orders.filter(order => order.sourceCurrencyBalance > 0);
+  const ordersArchived = orders.filter(order => order.sourceCurrencyBalance <= 0);
+
+  return (
+    <div className={classes.root}>
+      {orders.length > 0 &&
+        <div className={classes.ordersActiveWrapper}>
+          <h2>Active Orders</h2>
+          <Table className={classes.table} size="small">
+            <TableHead>
+              {renderOrdersTableHead('active')}
+            </TableHead>
+            <TableBody>
+              {renderOrdersActive(ordersActive)}
+            </TableBody>
+          </Table>
+        </div>
+      }
+      {ordersArchived.length > 0 &&
+        <div className={classes.ordersArchivedWrapper}>
+          <h2>Archived Orders</h2>
+          <Table className={classes.table} size="small">
+            <TableHead>
+              {renderOrdersTableHead('archived')}
+            </TableHead>
+            <TableBody>
+              {renderOrdersArchived(ordersArchived)}
+            </TableBody>
+          </Table>
+        </div>
+      }
+    </div>
+  );
+};
 
 export default OrderTable;
