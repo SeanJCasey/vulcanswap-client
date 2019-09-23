@@ -1,13 +1,16 @@
 import React from 'react';
 
-import { Button, Grid, MenuItem, Select, TextField } from '@material-ui/core';
+import { Button, Grid, MenuItem, Select, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import { TIMETABLE } from '../constants';
 import { getTokenTableForNetwork } from '../utils';
 
 const useStyles = makeStyles({
-  root: {}
+  root: {},
+  tokensRow: {
+    marginBottom: 20
+  }
 });
 
 const OrderForm = props => {
@@ -25,6 +28,16 @@ const OrderForm = props => {
       </MenuItem>
     );
 
+  const renderOrderSummary = () => {
+    const amount = inputs.quantity || 0;
+    const targetSymbol = inputs.tokenAddress ? tokenTable[inputs.tokenAddress].symbol : "[TOKEN]";
+    const frequency = inputs.frequency ? TIMETABLE[inputs.frequency] : "[FREQUENCY]";
+    const batches = inputs.batches || 0;
+    const amountPerBatch = amount && batches ? amount / batches : 0;
+
+    return `Use ${amount} DAI to buy ${targetSymbol} in ${batches} orders of ${amountPerBatch}, every ${frequency}`;
+  }
+
   const renderTargetTokenOptions = () =>
     Object.keys(tokenTable).map(address =>
       <MenuItem
@@ -37,7 +50,7 @@ const OrderForm = props => {
 
   return (
     <div className={classes.root}>
-      <Grid container>
+      <Grid className={classes.tokensRow} container>
         <Grid item xs={6}>
           <TextField
             className={classes.quantityInput}
@@ -50,6 +63,7 @@ const OrderForm = props => {
             placeholder="0.5"
             type="string"
             value={inputs.quantity}
+            variant="outlined"
           />
         </Grid>
         <Grid item xs={6}>
@@ -59,10 +73,13 @@ const OrderForm = props => {
             name="tokenAddress"
             onChange={onInputChange}
             value={inputs.tokenAddress}
+            variant="outlined"
           >
             {renderTargetTokenOptions()}
           </Select>
         </Grid>
+      </Grid>
+      <Grid container>
         <Grid item xs={6}>
           <Select
             className={classes.frequencyInput}
@@ -70,6 +87,7 @@ const OrderForm = props => {
             name="frequency"
             onChange={onInputChange}
             value={inputs.frequency}
+            variant="outlined"
           >
             {renderFrequencyOptions()}
           </Select>
@@ -80,25 +98,25 @@ const OrderForm = props => {
             error={!!formErrors.batches}
             fullWidth
             helperText={formErrors.batches ? formErrors.batches.message : ""}
-            label="Swap Amount"
+            label="Batches"
             name="batches"
             onChange={onInputChange}
             placeholder="5"
             type="number"
             value={inputs.batches}
+            variant="outlined"
           />
         </Grid>
-        <Grid item>
-          <Button
-            className="btn btn-primary"
-            color="primary"
-            onClick={onSubmitClick}
-            variant="contained"
-          >
-            Vulcanize!
-          </Button>
-        </Grid>
       </Grid>
+      <Typography variant="subtitle1">{renderOrderSummary()}</Typography>
+      <Button
+        className="btn btn-primary"
+        color="primary"
+        onClick={onSubmitClick}
+        variant="contained"
+      >
+        Vulcanize!
+      </Button>
     </div>
   );
 };

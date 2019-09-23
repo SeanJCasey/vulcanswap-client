@@ -1,13 +1,19 @@
 import React from 'react';
 
-import { Grid, Typography } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import OrderForm from "./OrderForm";
-import TokenLiquidityContainer from "../containers/TokenLiquidityContainer";
+// import TokenLiquidityContainer from "../containers/TokenLiquidityContainer";
+
+import { CLOUD_LIGHT } from '../theme/colors';
 
 const useStyles = makeStyles({
-  root: {}
+  root: {
+    borderRadius: 15,
+    background: CLOUD_LIGHT,
+    padding: 40
+  }
 });
 
 const OrderBuilderBlock = props => {
@@ -23,9 +29,9 @@ const OrderBuilderBlock = props => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="h3">New Order</Typography>
+      {/* <Typography variant="h3">New Order</Typography> */}
       <Grid container>
-        <Grid item xs={12} sm={6} md={7} lg={8}>
+        <Grid item xs={12}>
           <OrderForm
             formErrors={formErrors}
             inputs={newOrderInputs}
@@ -34,13 +40,13 @@ const OrderBuilderBlock = props => {
             onInputChange={onOrderInputChange}
           />
         </Grid>
-        {newOrderInputs.tokenAddress &&
-          <Grid item xs={12} sm={6} md={5} lg={4}>
-            <TokenLiquidityContainer
-              targetTokenAddress={newOrderInputs.tokenAddress}
-            />
-          </Grid>
-        }
+        {/* {newOrderInputs.tokenAddress && */}
+        {/*   <Grid item xs={12} sm={6} md={5} lg={4}> */}
+        {/*     <TokenLiquidityContainer */}
+        {/*       targetTokenAddress={newOrderInputs.tokenAddress} */}
+        {/*     /> */}
+        {/*   </Grid> */}
+        {/* } */}
       </Grid>
     </div>
   );
