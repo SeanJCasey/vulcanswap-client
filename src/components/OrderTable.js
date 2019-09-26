@@ -29,30 +29,29 @@ const OrderTable = props => {
   const getOrdersColLabels = type => {
     switch (type) {
       case 'archived':
-        return ["Order #", "No of ETH", "Target Token", "Frequency", "Batches", "Converted", "Last Trade", "Status"];
+        return ["Order #", "Contributed", "Converted", "Batches", "Frequency", "Last Trade", "Status"];
       case 'active':
       default:
-        return ["Order #", "No of ETH", "Target Token", "Frequency", "Batches", "Converted", "Last Trade", "Next Trade"];
+        return ["Order #", "Contributed", "Converted", "Batches", "Frequency", "Last Trade", "Next Trade"];
     }
   };
 
   const getOrderTableValues = (order, type) => {
-    const amount = order.amount;
     const batchesExecuted = `${order.batchesExecuted} / ${order.batches}`;
     const conversionLast = order.lastConversionTimestamp > 0 ? dateObjDisplayFormatter(new Date(order.lastConversionTimestamp * 1000)) : "n/a";
     const conversionNext = order.nextConversionTimestamp > 0 ? dateObjDisplayFormatter(new Date(order.nextConversionTimestamp * 1000)) : "overdue!";
     const id = order.id;
     const frequency = TIMETABLE[order.frequency] ? TIMETABLE[order.frequency] : `${order.frequency} seconds`;
-    const targetCurrency = tokenTable[order.targetCurrency] ? tokenTable[order.targetCurrency].name : order.targetCurrency;
-    const targetCurrencyConverted = `${order.targetCurrencyConverted} ${tokenTable[order.targetCurrency] ? tokenTable[order.targetCurrency].symbol : ""}`;
+    const sourceCurrencyInitial = `${order.amount} ${tokenTable[order.sourceCurrency].symbol}`;
     const status = order.batchesExecuted < order.batches ? "cancelled" : "completed";
+    const targetCurrencyConverted = `${Number(order.targetCurrencyConverted).toFixed(4)} ${tokenTable[order.targetCurrency].symbol}`;
 
     switch (type) {
       case 'archived':
-        return [id, amount, targetCurrency, frequency, batchesExecuted, targetCurrencyConverted, conversionLast, status];
+        return [id, sourceCurrencyInitial, targetCurrencyConverted, batchesExecuted, frequency, conversionLast, status];
       case 'active':
       default:
-        return [id, amount, targetCurrency, frequency, batchesExecuted, targetCurrencyConverted, conversionLast, conversionNext];
+        return [id, sourceCurrencyInitial, targetCurrencyConverted, batchesExecuted, frequency, conversionLast, conversionNext];
 
     }
   };
@@ -65,13 +64,14 @@ const OrderTable = props => {
         const order = {
           'id': orderState.value.id_,
           'amount': drizzle.web3.utils.fromWei(orderState.value.amount_, 'ether'),
+          'sourceCurrency': orderState.value.sourceCurrency_,
           'targetCurrency': orderState.value.targetCurrency_,
           'frequency': Number(orderState.value.frequency_),
           'batches': Number(orderState.value.batches_),
           'batchesExecuted': Number(orderState.value.batchesExecuted_),
-          'targetCurrencyConverted': Number(orderState.value.targetCurrencyConverted_),
+          'targetCurrencyConverted': drizzle.web3.utils.fromWei(orderState.value.targetCurrencyConverted_),
           'lastConversionTimestamp': Number(orderState.value.lastConversionTimestamp_),
-          'sourceCurrencyBalance': Number(orderState.value.sourceCurrencyBalance_)
+          'sourceCurrencyBalance': drizzle.web3.utils.fromWei(orderState.value.sourceCurrencyBalance_)
         }
         order['nextConversionTimestamp'] = order['lastConversionTimestamp'] > 0 ? order['lastConversionTimestamp'] + order['frequency'] : 0;
         orders.push(order);
@@ -95,8 +95,7 @@ const OrderTable = props => {
         )}
         <TableCell>
           <Button
-            onClick={onCancelOrderClick}
-            value={order.id}
+            onClick={() => onCancelOrderClick(order.id)}
             variant="outlined"
           >
             Cancel

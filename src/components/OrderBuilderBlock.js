@@ -4,7 +4,7 @@ import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import OrderForm from "./OrderForm";
-// import TokenLiquidityContainer from "../containers/TokenLiquidityContainer";
+import TokenLiquidityContainer from "../containers/TokenLiquidityContainer";
 
 import { CLOUD_LIGHT } from '../theme/colors';
 
@@ -40,13 +40,13 @@ const OrderBuilderBlock = props => {
             onInputChange={onOrderInputChange}
           />
         </Grid>
-        {/* {newOrderInputs.tokenAddress && */}
-        {/*   <Grid item xs={12} sm={6} md={5} lg={4}> */}
-        {/*     <TokenLiquidityContainer */}
-        {/*       targetTokenAddress={newOrderInputs.tokenAddress} */}
-        {/*     /> */}
-        {/*   </Grid> */}
-        {/* } */}
+        {newOrderInputs.targetTokenAddress &&
+          <Grid item xs={12} sm={6} md={5} lg={4}>
+            <TokenLiquidityContainer
+              targetTokenAddress={newOrderInputs.targetTokenAddress}
+            />
+          </Grid>
+        }
       </Grid>
     </div>
   );

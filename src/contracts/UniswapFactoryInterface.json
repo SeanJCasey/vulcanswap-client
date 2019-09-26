@@ -13,8 +13,7 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x1c2bbd18"
+      "type": "function"
     },
     {
       "constant": true,
@@ -28,8 +27,7 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x9f181b5e"
+      "type": "function"
     },
     {
       "constant": false,
@@ -48,8 +46,7 @@
       ],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x1648f38e"
+      "type": "function"
     },
     {
       "constant": true,
@@ -68,8 +65,7 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x06f2bf62"
+      "type": "function"
     },
     {
       "constant": true,
@@ -88,8 +84,7 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x59770438"
+      "type": "function"
     },
     {
       "constant": true,
@@ -108,8 +103,7 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0xaa65a6c0"
+      "type": "function"
     },
     {
       "constant": false,
@@ -123,8 +117,7 @@
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x538a3f0e"
+      "type": "function"
     }
   ],
   "metadata": "",
@@ -1099,8 +1092,8 @@
     "version": "0.5.2+commit.1df8f40c.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.6",
-  "updatedAt": "2019-06-14T15:55:40.421Z",
+  "schemaVersion": "3.0.16",
+  "updatedAt": "2019-09-26T06:44:49.114Z",
   "devdoc": {
     "methods": {}
   },

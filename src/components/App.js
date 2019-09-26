@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { DrizzleContext } from 'drizzle-react';
 
 import { makeStyles } from '@material-ui/styles';
 
-import Navbar from './Navbar';
 // import AdminPage from '../containers/AdminPage';
 import CostAverageOrderBookPage from '../containers/CostAverageOrderBookPage';
+import useAddContracts from '../effects/useAddContracts';
+import Navbar from './Navbar';
 
 const useStyles = makeStyles({
   root: {}
@@ -13,6 +15,9 @@ const useStyles = makeStyles({
 
 const App = props => {
   const classes = useStyles(props);
+  const { initialized, drizzle } = useContext(DrizzleContext.Context);
+
+  const contractsInitialized = useAddContracts(initialized, drizzle);
 
   return (
     <div className={classes.root}>
@@ -21,7 +26,11 @@ const App = props => {
         <Route
           path='/'
           exact
-          component={CostAverageOrderBookPage}
+          render={props => (
+            <CostAverageOrderBookPage
+              contractsInitialized={contractsInitialized}
+            />
+          )}
         />
         {/* <Route */}
         {/*   path='/admin' */}

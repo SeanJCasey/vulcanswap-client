@@ -11,6 +11,16 @@ export const dateObjDisplayFormatter = dateObj => {
     return `${year}-${date} ${time} UTC`;
 };
 
+export const findTokenByFieldName = (fieldName, value, networkId) => {
+  const tokenTable = getTokenTableForNetwork(networkId);
+  return Object.values(tokenTable).find(token => token[fieldName] === value);
+}
+
+export const filterTokensByFieldName = (fieldName, value, networkId) => {
+  const tokenTable = getTokenTableForNetwork(networkId);
+  return Object.values(tokenTable).filter(token => token[fieldName] === value);
+}
+
 export const getTokenTableForNetwork = networkId =>
   TOKENTABLES[networkId];
 

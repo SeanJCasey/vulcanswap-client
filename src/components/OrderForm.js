@@ -4,7 +4,8 @@ import { Button, Grid, MenuItem, Select, TextField, Typography } from '@material
 import { makeStyles } from '@material-ui/styles';
 
 import { TIMETABLE } from '../constants';
-import { getTokenTableForNetwork } from '../utils';
+
+import useTokenTable from '../effects/useTokenTable';
 
 const useStyles = makeStyles({
   root: {},
@@ -16,7 +17,7 @@ const useStyles = makeStyles({
 const OrderForm = props => {
   const classes = useStyles(props);
   const { formErrors, inputs, networkId, onInputChange, onSubmitClick } = props;
-  const tokenTable = getTokenTableForNetwork(networkId);
+  const tokenTable = useTokenTable(networkId);
 
   const renderFrequencyOptions = () =>
     Object.keys(TIMETABLE).map(seconds =>
@@ -30,12 +31,28 @@ const OrderForm = props => {
 
   const renderOrderSummary = () => {
     const amount = inputs.quantity || 0;
-    const targetSymbol = inputs.tokenAddress ? tokenTable[inputs.tokenAddress].symbol : "[TOKEN]";
+    const sourceSymbol = inputs.sourceTokenAddress ? tokenTable[inputs.sourceTokenAddress].symbol : "[TOKEN]";
+    const targetSymbol = inputs.targetTokenAddress ? tokenTable[inputs.targetTokenAddress].symbol : "[TOKEN]";
     const frequency = inputs.frequency ? TIMETABLE[inputs.frequency] : "[FREQUENCY]";
     const batches = inputs.batches || 0;
     const amountPerBatch = amount && batches ? amount / batches : 0;
 
-    return `Use ${amount} DAI to buy ${targetSymbol} in ${batches} orders of ${amountPerBatch}, every ${frequency}`;
+    return `Use ${amount} ${sourceSymbol} to buy ${targetSymbol} in ${batches} orders of ${amountPerBatch}, every ${frequency}`;
+  }
+
+  const renderSourceTokenOptions = () => {
+    const sourceTokens = Object.values(tokenTable).filter(token => ["DAI", "ETH"].includes(token.symbol));
+    if (sourceTokens) {
+      return sourceTokens.map(sourceToken =>
+        <MenuItem
+          key={sourceToken.address}
+          value={sourceToken.address}
+        >
+          {sourceToken.name}
+        </MenuItem>
+      );
+    }
+    else return null;
   }
 
   const renderTargetTokenOptions = () =>
@@ -51,6 +68,18 @@ const OrderForm = props => {
   return (
     <div className={classes.root}>
       <Grid className={classes.tokensRow} container>
+        <Grid item xs={6}>
+          <Select
+            className={classes.sourceTokenInput}
+            fullWidth
+            name="sourceTokenAddress"
+            onChange={onInputChange}
+            value={inputs.sourceTokenAddress}
+            variant="outlined"
+          >
+            {renderSourceTokenOptions()}
+          </Select>
+        </Grid>
         <Grid item xs={6}>
           <TextField
             className={classes.quantityInput}
@@ -68,11 +97,11 @@ const OrderForm = props => {
         </Grid>
         <Grid item xs={6}>
           <Select
-            className={classes.tokenAddressInput}
+            className={classes.targetTokenInput}
             fullWidth
-            name="tokenAddress"
+            name="targetTokenAddress"
             onChange={onInputChange}
-            value={inputs.tokenAddress}
+            value={inputs.targetTokenAddress}
             variant="outlined"
           >
             {renderTargetTokenOptions()}

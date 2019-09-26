@@ -37,9 +37,8 @@ class OrderTableContainer extends Component {
   }
 
   /* EVENT HANDLERS */
-  handleCancelOrderClick = event => {
+  handleCancelOrderClick = orderId => {
     const { drizzle } = this.context;
-    const orderId = event.target.value;
     const contract = drizzle.contracts.CostAverageOrderBook;
 
     contract.methods.cancelOrder(orderId).send()

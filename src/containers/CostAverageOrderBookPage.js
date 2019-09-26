@@ -7,11 +7,14 @@ import OrderBuilderContainer from './OrderBuilderContainer';
 import OrderTableContainer from './OrderTableContainer';
 import TitleWrapper from '../components/TitleWrapper';
 
+import OrderConversionActions from '../components/unused/OrderConversionActions';
+
 class CostAverageOrderBookPage extends Component {
   render() {
     const { initialized } = this.context;
+    const { contractsInitialized } = this.props;
 
-    if (!initialized) {
+    if (!initialized || !contractsInitialized) {
         return "Loading...";
     }
 
@@ -22,6 +25,7 @@ class CostAverageOrderBookPage extends Component {
           <AccountStatsBlock />
           <OrderBuilderContainer />
           <OrderTableContainer />
+          <OrderConversionActions />
         </MainContentWrapper>
       </div>
     );

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { DrizzleContext } from 'drizzle-react';
 
+import { ADDRESS_ZERO } from '../constants';
+
 import UniswapExchangeInterface from '../contracts/UniswapExchangeInterface.json';
 
 import TokenLiquidityBlock from '../components/TokenLiquidityBlock';
@@ -24,25 +26,27 @@ class TokenLiquidityContainer extends Component {
     }
   }
 
-  updateExchange() {
+  async updateExchange() {
     const { drizzle } = this.context;
     const { targetTokenAddress } = this.props;
     const factory = drizzle.contracts.UniswapFactoryInterface;
+    if (targetTokenAddress === ADDRESS_ZERO) return;
+
     factory.methods.getExchange(targetTokenAddress).call()
       .then(exchangeAddress => {
-        // this.setState({ exchangeAddress }));
-        // Grab liquidity pool info from Uniswap
         return new drizzle.web3.eth.Contract(
           UniswapExchangeInterface.abi,
-          exchangeAddress,
-          { data: 'deployedBytecode' }
+          exchangeAddress
         );
       })
       .then(IExchangeContract => {
-        const ratePerEth = drizzle.web3.eth.getBalance(IExchangeContract._address)
+        const totalEth = drizzle.web3.eth.getBalance(IExchangeContract._address)
           .then(result => drizzle.web3.utils.fromWei(result, 'ether'));
 
-        const totalEth = IExchangeContract.methods.getEthToTokenInputPrice(drizzle.web3.utils.toWei('1', 'ether')).call();
+        const ratePerEth = IExchangeContract.methods.getEthToTokenInputPrice(
+          drizzle.web3.utils.toWei('1', 'ether')
+        ).call()
+          .then(result => drizzle.web3.utils.fromWei(result))
 
         return(Promise.all([ratePerEth, totalEth]));
       })
@@ -50,8 +54,8 @@ class TokenLiquidityContainer extends Component {
         this.setState({
           exchangeData: {
             tokenAddress: targetTokenAddress,
-            ratePerEth: result[1],
-            totalEth: result[0]
+            ratePerEth: result[0],
+            totalEth: result[1]
           }
         })
       )

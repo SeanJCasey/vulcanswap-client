@@ -30,7 +30,7 @@ const TokenLiquidityBlock = props => {
           </div>
           <div className={classes.detail}>
             <Typography variant="subtitle1">Current Rate:</Typography>
-            <Typography variant="body1">{`${exchangeData.ratePerEth} ${token.symbol} / ETH`}</Typography>
+            <Typography variant="body1">{`${Number(exchangeData.ratePerEth).toFixed(2)} ${token.symbol} / ETH`}</Typography>
           </div>
           <div className={classes.detail}>
             <Typography variant="subtitle1">Current Liquidity:</Typography>
