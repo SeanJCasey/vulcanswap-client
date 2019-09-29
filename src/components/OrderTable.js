@@ -13,6 +13,13 @@ import { makeStyles } from '@material-ui/styles';
 import { TIMETABLE } from '../constants';
 import { dateObjDisplayFormatter, getTokenTableForNetwork } from '../utils';
 
+const ORDER_STATES = {
+  FAILED: 0,
+  ACTIVE: 1,
+  COMPLETED: 2,
+  CANCELLED: 3
+}
+
 const useStyles = makeStyles({
   ordersActiveWrapper: {},
   ordersArchivedWrapper: {},
@@ -25,6 +32,13 @@ const OrderTable = props => {
   const { drizzle, drizzleState, onCancelOrderClick, orderKeys } = props;
 
   const tokenTable = getTokenTableForNetwork(drizzle.store.getState().web3.networkId);
+
+  const orderStateLabels = {
+    [ORDER_STATES.FAILED]: "Failed",
+    [ORDER_STATES.ACTIVE]: "Active",
+    [ORDER_STATES.COMPLETED]: "Completed",
+    [ORDER_STATES.CANCELLED]: "Cancelled"
+  }
 
   const getOrdersColLabels = type => {
     switch (type) {
@@ -43,7 +57,7 @@ const OrderTable = props => {
     const id = order.id;
     const frequency = TIMETABLE[order.frequency] ? TIMETABLE[order.frequency] : `${order.frequency} seconds`;
     const sourceCurrencyInitial = `${order.amount} ${tokenTable[order.sourceCurrency].symbol}`;
-    const status = order.batchesExecuted < order.batches ? "cancelled" : "completed";
+    const status = orderStateLabels[order.status];
     const targetCurrencyConverted = `${Number(order.targetCurrencyConverted).toFixed(4)} ${tokenTable[order.targetCurrency].symbol}`;
 
     switch (type) {
@@ -62,16 +76,17 @@ const OrderTable = props => {
       const orderState = drizzleState.contracts.CostAverageOrderBook.getOrderForAccountIndex[orderKey];
       if (orderState) {
         const order = {
-          'id': orderState.value.id_,
-          'amount': drizzle.web3.utils.fromWei(orderState.value.amount_, 'ether'),
-          'sourceCurrency': orderState.value.sourceCurrency_,
-          'targetCurrency': orderState.value.targetCurrency_,
-          'frequency': Number(orderState.value.frequency_),
-          'batches': Number(orderState.value.batches_),
-          'batchesExecuted': Number(orderState.value.batchesExecuted_),
-          'targetCurrencyConverted': drizzle.web3.utils.fromWei(orderState.value.targetCurrencyConverted_),
-          'lastConversionTimestamp': Number(orderState.value.lastConversionTimestamp_),
-          'sourceCurrencyBalance': drizzle.web3.utils.fromWei(orderState.value.sourceCurrencyBalance_)
+          id: orderState.value.id_,
+          amount: drizzle.web3.utils.fromWei(orderState.value.amount_, 'ether'),
+          sourceCurrency: orderState.value.sourceCurrency_,
+          targetCurrency: orderState.value.targetCurrency_,
+          status: Number(orderState.value.state_),
+          frequency: Number(orderState.value.frequency_),
+          batches: Number(orderState.value.batches_),
+          batchesExecuted: Number(orderState.value.batchesExecuted_),
+          targetCurrencyConverted: drizzle.web3.utils.fromWei(orderState.value.targetCurrencyConverted_),
+          lastConversionTimestamp: Number(orderState.value.lastConversionTimestamp_),
+          sourceCurrencyBalance: drizzle.web3.utils.fromWei(orderState.value.sourceCurrencyBalance_)
         }
         order['nextConversionTimestamp'] = order['lastConversionTimestamp'] > 0 ? order['lastConversionTimestamp'] + order['frequency'] : 0;
         orders.push(order);
@@ -137,8 +152,8 @@ const OrderTable = props => {
   const orders = getFormattedOrders();
   if (!(orders.length > 0)) return null;
 
-  const ordersActive = orders.filter(order => order.sourceCurrencyBalance > 0);
-  const ordersArchived = orders.filter(order => order.sourceCurrencyBalance <= 0);
+  const ordersActive = orders.filter(order => order.status === ORDER_STATES.ACTIVE);
+  const ordersArchived = orders.filter(order => order.status !== ORDER_STATES.ACTIVE);
 
   return (
     <div className={classes.root}>
