@@ -43,7 +43,7 @@ class AccountStatsBlock extends Component {
           ETH available: {drizzle.web3.utils.fromWei(ethBalance.toString(), 'ether')} ETH
         </div>
         <div className="daiBalance">
-          DAI available: {daiBalance && drizzle.web3.utils.fromWei(daiBalance.value, 'ether')} DAI
+          DAI available: {daiBalance && daiBalance.value && drizzle.web3.utils.fromWei(daiBalance.value, 'ether')} DAI
         </div>
       </div>
     );
