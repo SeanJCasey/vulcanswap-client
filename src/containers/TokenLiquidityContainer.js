@@ -41,8 +41,7 @@ class TokenLiquidityContainer extends Component {
       })
       .then(IExchangeContract => {
         const totalEth = drizzle.web3.eth.getBalance(IExchangeContract._address)
-          .then(result => drizzle.web3.utils.fromWei(result, 'ether'));
-
+          .then(result => drizzle.web3.utils.fromWei(result, 'ether'))
         const ratePerEth = IExchangeContract.methods.getEthToTokenInputPrice(
           drizzle.web3.utils.toWei('1', 'ether')
         ).call()

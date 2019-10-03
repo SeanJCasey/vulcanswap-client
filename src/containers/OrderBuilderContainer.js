@@ -3,7 +3,7 @@ import { DrizzleContext } from 'drizzle-react';
 
 import { ADDRESS_ZERO } from '../constants';
 import IERC20 from '../contracts/IERC20.json';
-import { filterTokensByFieldName, findTokenByFieldName } from '../utils';
+import { findTokenByFieldName, getTokenTableForNetwork } from '../utils';
 
 import OrderBuilderBlock from '../components/OrderBuilderBlock';
 
@@ -20,27 +20,41 @@ class OrderBuilderContainer extends Component {
     newOrderStackId: null,
     orderParamLimitsKey: null,
     sourceCurrencyLimitsKeys: {},
+    tokenBalanceKeys: {}
   };
 
   componentDidMount() {
-    const { drizzle } = this.context;
+    const { drizzle, drizzleState } = this.context;
 
     this.setOrderDefaults();
 
+    const account = drizzleState.accounts[0];
     const networkId = drizzle.store.getState().web3.networkId;
-    const sourceTokens = filterTokensByFieldName("isSource", true, networkId);
+    const tokenTable = getTokenTableForNetwork(networkId);
     const contract = drizzle.contracts.CostAverageOrderBook;
+
+    // Monitor order limits
     const orderParamLimitsKey = contract.methods["getOrderParamLimits"].cacheCall();
 
+    // Monitor accepted currencies
+    const sourceTokens = Object.values(tokenTable).filter(token => token.isSource === true);
     const sourceCurrencyLimitsKeys = {}
     for (const token of sourceTokens) {
-      const cacheKey = contract.methods["getSourceCurrencyLimits"].cacheCall(token.address);
+      const cacheKey = contract.methods["acceptedCurrencyInfo"].cacheCall(token.address);
       sourceCurrencyLimitsKeys[token.address] = cacheKey;
+    }
+
+    // Monitor token balances
+    const erc20Tokens = Object.values(tokenTable).filter(token => token.address !== ADDRESS_ZERO);
+    let tokenBalanceKeys = {}
+    for (const erc20Token of erc20Tokens) {
+      tokenBalanceKeys[erc20Token.address] = drizzle.contracts[`I${erc20Token.symbol}`].methods["balanceOf"].cacheCall(account);
     }
 
     this.setState({
       orderParamLimitsKey,
-      sourceCurrencyLimitsKeys
+      sourceCurrencyLimitsKeys,
+      tokenBalanceKeys
     });
   }
 
@@ -82,6 +96,24 @@ class OrderBuilderContainer extends Component {
     this.setState({ newOrderStackId });
   }
 
+  getTokenBalance(token) {
+    if (!token) return null;
+
+    const { drizzle, drizzleState } = this.context;
+    const { tokenBalanceKeys } = this.state;
+
+    if (token.address === ADDRESS_ZERO) {
+      return drizzle.web3.utils.fromWei(drizzleState.accountBalances[drizzleState.accounts[0]]);
+    }
+    else {
+      const tokenBalanceKey = tokenBalanceKeys[token.address];
+      if (!tokenBalanceKey) return null;
+
+      const tokenBalanceRes = drizzleState.contracts[`I${token.symbol}`].balanceOf[tokenBalanceKey];
+      return tokenBalanceRes ? drizzle.web3.utils.fromWei(tokenBalanceRes.value, 'ether') : null;
+    }
+  }
+
   setOrderDefaults() {
     const { drizzle } = this.context;
 
@@ -91,9 +123,9 @@ class OrderBuilderContainer extends Component {
 
     this.setState({
       newOrderInputs: {
-        batches: '',
+        batches: 5,
         frequency: 3600,
-        quantity: '',
+        quantity: 0,
         sourceTokenAddress,
         targetTokenAddress
       }
@@ -107,12 +139,12 @@ class OrderBuilderContainer extends Component {
     const contract = drizzleState.contracts.CostAverageOrderBook;
 
     const { minBatches_, maxBatches_ } = contract.getOrderParamLimits[orderParamLimitsKey].value;
-    const { minAmount_, maxAmount_ } = contract.getSourceCurrencyLimits[sourceCurrencyLimitsKeys[sourceTokenAddress]].value;
+    const { minAmount, maxAmount } = contract.acceptedCurrencyInfo[sourceCurrencyLimitsKeys[sourceTokenAddress]].value;
 
     const formErrors = {};
 
-    const minAmountFormatted = drizzle.web3.utils.fromWei(String(minAmount_), 'ether');
-    const maxAmountFormatted = drizzle.web3.utils.fromWei(String(maxAmount_), 'ether');
+    const minAmountFormatted = drizzle.web3.utils.fromWei(String(minAmount), 'ether');
+    const maxAmountFormatted = drizzle.web3.utils.fromWei(String(maxAmount), 'ether');
 
     if (quantity < Number(minAmountFormatted)) {
       formErrors['quantity'] = { message: `Must be greater than ${minAmountFormatted}` };
@@ -152,10 +184,17 @@ class OrderBuilderContainer extends Component {
   }
 
   render() {
-    const { formErrors, newOrderInputs } = this.state;
     const { drizzle } = this.context;
+    const { formErrors, newOrderInputs } = this.state;
 
     const networkId = drizzle.store.getState().web3.networkId;
+    const tokenTable = getTokenTableForNetwork(networkId)
+    const sourceToken = tokenTable[newOrderInputs.sourceTokenAddress];
+
+    let sourceTokenBalance;
+    if (sourceToken) {
+      sourceTokenBalance = this.getTokenBalance(sourceToken);
+    }
 
     return (
       <OrderBuilderBlock
@@ -164,6 +203,7 @@ class OrderBuilderContainer extends Component {
         newOrderInputs={newOrderInputs}
         onOrderInputChange={this.handleOrderInputChange}
         onOrderSubmitClick={this.handleOrderSubmitClick}
+        sourceTokenBalance={sourceTokenBalance}
       />
     );
   }

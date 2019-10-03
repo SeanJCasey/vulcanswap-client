@@ -1,14 +1,111 @@
 import React from 'react';
 
-import { Button, Grid, MenuItem, Select, TextField, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Input,
+  MenuItem,
+  Select,
+  Typography
+} from '@material-ui/core';
+import {
+  ArrowRightAlt as ArrowIcon,
+  Alarm as FrequencyIcon,
+  FilterNone as BatchesIcon
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
 import { TIMETABLE } from '../constants';
-
 import useTokenTable from '../effects/useTokenTable';
+import {
+  BLUE_DARK3,
+  BLUE_LIGHT2,
+  GRAY_DARK1,
+  GRAY,
+  GRAY_LIGHT5,
+  WHITE
+} from '../theme/colors';
+import { truncateAmountToMaxDecimals } from '../utils';
+
+import CurrencyPicker from './forms/CurrencyPicker';
 
 const useStyles = makeStyles({
+  amountPerBatchWrapper: {
+    color: GRAY,
+    marginLeft: 10
+  },
+  arrowIconWrapper: {
+    height: '100%',
+    margin: '0 20px',
+    '& svg': {
+      fill: GRAY_DARK1,
+      height: '100%',
+      width: 55
+    }
+  },
+  batchesInput: {
+    color: BLUE_DARK3,
+    margin: '0 10px',
+    paddingLeft: 15,
+    width: 60,
+    '& input': {
+      fontSize: 20,
+      textAlign: 'center'
+    }
+  },
+  currencyPickerGroup: {
+    backgroundColor: GRAY_LIGHT5,
+    borderRadius: 24,
+    padding: '5px 10px 5px 15px'
+  },
+  formBottomWrapper: {
+    padding: "24px 48px"
+  },
+  formTopWrapper: {
+    backgroundColor: WHITE,
+    padding: "32px 48px"
+  },
+  frequencyInput: {
+    color: BLUE_DARK3,
+    fontSize: 20,
+    marginLeft: 10,
+    padding: '0 10px'
+  },
+  frequencyInputWrapper: {
+    // marginTop: 20
+    marginLeft: 48
+  },
+  inputHelperText: {
+    color: BLUE_DARK3
+  },
+  inputIconWrapper: {
+    '& svg': {
+      color: BLUE_LIGHT2,
+      verticalAlign: 'middle'
+    }
+  },
+  quantityInput: {
+    '& input': {
+      fontSize: 24,
+      margin: '0 10px 0 20px',
+      textAlign: 'center'
+    }
+  },
   root: {},
+  selectRoot: {
+    '&:focus': {
+      backgroundColor: 'inherit'
+    }
+  },
+  sourceTokenBalance: {
+    marginLeft: 20,
+    color: GRAY
+  },
+  submitButton: {
+    borderRadius: 24,
+    boxShadow: 'none',
+    marginTop: 24
+  },
   tokensRow: {
     marginBottom: 20
   }
@@ -16,8 +113,19 @@ const useStyles = makeStyles({
 
 const OrderForm = props => {
   const classes = useStyles(props);
-  const { formErrors, inputs, networkId, onInputChange, onSubmitClick } = props;
+  const {
+    formErrors,
+    inputs,
+    networkId,
+    onInputChange,
+    onSubmitClick,
+    sourceTokenBalance
+  } = props;
+
   const tokenTable = useTokenTable(networkId);
+  const tokenOptions = Object.values(tokenTable);
+  const sourceTokenOptions = tokenOptions.filter(token => ["DAI", "ETH"].includes(token.symbol));
+  const sourceSymbol = inputs.sourceTokenAddress ? tokenTable[inputs.sourceTokenAddress].symbol : "[TOKEN]";
 
   const renderFrequencyOptions = () =>
     Object.keys(TIMETABLE).map(seconds =>
@@ -29,123 +137,155 @@ const OrderForm = props => {
       </MenuItem>
     );
 
-  const renderOrderSummary = () => {
-    const amount = inputs.quantity || 0;
-    const sourceSymbol = inputs.sourceTokenAddress ? tokenTable[inputs.sourceTokenAddress].symbol : "[TOKEN]";
-    const targetSymbol = inputs.targetTokenAddress ? tokenTable[inputs.targetTokenAddress].symbol : "[TOKEN]";
-    const frequency = inputs.frequency ? TIMETABLE[inputs.frequency] : "[FREQUENCY]";
-    const batches = inputs.batches || 0;
-    const amountPerBatch = amount && batches ? amount / batches : 0;
+  // const renderAmountPerBatchText = () => {
+  //   const amount = inputs.quantity || 0;
+  //   const batches = inputs.batches || 0;
+  //   const amountPerBatch = (amount && batches) ? (amount / batches).toFixed(2) : "-";
+  //   return `${amountPerBatch} ${sourceSymbol}`;
+  // }
 
-    return `Use ${amount} ${sourceSymbol} to buy ${targetSymbol} in ${batches} orders of ${amountPerBatch}, every ${frequency}`;
-  }
-
-  const renderSourceTokenOptions = () => {
-    const sourceTokens = Object.values(tokenTable).filter(token => ["DAI", "ETH"].includes(token.symbol));
-    if (sourceTokens) {
-      return sourceTokens.map(sourceToken =>
-        <MenuItem
-          key={sourceToken.address}
-          value={sourceToken.address}
-        >
-          {sourceToken.name}
-        </MenuItem>
-      );
-    }
-    else return null;
-  }
-
-  const renderTargetTokenOptions = () =>
-    Object.keys(tokenTable).map(address =>
-      <MenuItem
-        key={address}
-        value={address}
-      >
-        {tokenTable[address].name}
-      </MenuItem>
-    );
+//   const renderOrderSummary = () => {
+//     const amount = inputs.quantity || 0;
+//     const sourceSymbol = inputs.sourceTokenAddress ? tokenTable[inputs.sourceTokenAddress].symbol : "[TOKEN]";
+//     const targetSymbol = inputs.targetTokenAddress ? tokenTable[inputs.targetTokenAddress].symbol : "[TOKEN]";
+//     const frequency = inputs.frequency ? TIMETABLE[inputs.frequency] : "[FREQUENCY]";
+//     const batches = inputs.batches || 0;
+//     const amountPerBatch = amount && batches ? amount / batches : 0;
+//
+//     return `Use ${amount} ${sourceSymbol} to buy ${targetSymbol} in ${batches} orders of ${amountPerBatch}, every ${frequency}`;
+//   }
 
   return (
     <div className={classes.root}>
-      <Grid className={classes.tokensRow} container>
-        <Grid item xs={6}>
-          <Select
-            className={classes.sourceTokenInput}
-            fullWidth
-            name="sourceTokenAddress"
-            onChange={onInputChange}
-            value={inputs.sourceTokenAddress}
-            variant="outlined"
+      <div className={classes.formTopWrapper}>
+        <Box className={classes.currencyInputsWrapper} display="flex" alignItems="center">
+          <Box flexGrow={1}>
+            <div className={classes.currencyPickerGroup}>
+              <Box display="flex" alignItems="center">
+                <Box flexGrow={1}>
+                  <Input
+                    autoComplete="off"
+                    autoFocus={true}
+                    className={classes.quantityInput}
+                    disableUnderline
+                    fullWidth
+                    name="quantity"
+                    onChange={onInputChange}
+                    placeholder="100"
+                    type="number"
+                    value={inputs.quantity}
+                  />
+                </Box>
+                <Box>
+                  <CurrencyPicker
+                    inputName="sourceTokenAddress"
+                    onInputChange={onInputChange}
+                    selectedTokenAddress={inputs.sourceTokenAddress}
+                    tokens={sourceTokenOptions}
+                  />
+                </Box>
+              </Box>
+            </div>
+          </Box>
+          <Box>
+            <div className={classes.arrowIconWrapper}>
+              <ArrowIcon />
+            </div>
+          </Box>
+          <Box>
+            <div className={classes.currencyPickerGroup}>
+              <CurrencyPicker
+                inputName="targetTokenAddress"
+                onInputChange={onInputChange}
+                selectedTokenAddress={inputs.targetTokenAddress}
+                tokens={tokenOptions}
+              />
+            </div>
+          </Box>
+        </Box>
+        <Typography
+          className={classes.sourceTokenBalance}
+          variant="subtitle1"
+        >
+          Available: {sourceTokenBalance ?
+            `${truncateAmountToMaxDecimals(sourceTokenBalance, 2)} ${sourceSymbol}`  :
+            "loading..."
+          }
+        </Typography>
+
+      </div>
+
+      <div className={classes.formBottomWrapper}>
+
+        <Box
+          alignItems="center"
+          display="flex"
+          justifyContent="center"
+        >
+          <Box
+            alignItems="center"
+            display="flex"
+            className={classes.batchesInputWrapper}
           >
-            {renderSourceTokenOptions()}
-          </Select>
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            className={classes.quantityInput}
-            error={formErrors && formErrors.quantity}
-            fullWidth
-            helperText={formErrors.quantity ? formErrors.quantity.message : ""}
-            label="Swap Amount"
-            name="quantity"
-            onChange={onInputChange}
-            placeholder="0.5"
-            type="string"
-            value={inputs.quantity}
-            variant="outlined"
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <Select
-            className={classes.targetTokenInput}
-            fullWidth
-            name="targetTokenAddress"
-            onChange={onInputChange}
-            value={inputs.targetTokenAddress}
-            variant="outlined"
+            <Box className={classes.inputIconWrapper}>
+              <BatchesIcon />
+            </Box>
+            <Box>
+              <Input
+                autoComplete="off"
+                className={classes.batchesInput}
+                color="primary"
+                fullWidth
+                name="batches"
+                onChange={onInputChange}
+                placeholder="5"
+                type="number"
+                value={inputs.batches}
+              />
+            </Box>
+            <Box>
+              <Typography
+                className={classes.inputHelperText}
+                variant="body1"
+              >
+                {"batches"}
+              </Typography>
+            </Box>
+          </Box>
+          <Box
+            alignItems="center"
+            display="flex"
+            className={classes.frequencyInputWrapper}
           >
-            {renderTargetTokenOptions()}
-          </Select>
-        </Grid>
-      </Grid>
-      <Grid container>
-        <Grid item xs={6}>
-          <Select
-            className={classes.frequencyInput}
-            fullWidth
-            name="frequency"
-            onChange={onInputChange}
-            value={inputs.frequency}
-            variant="outlined"
-          >
-            {renderFrequencyOptions()}
-          </Select>
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            className={classes.batchesInput}
-            error={!!formErrors.batches}
-            fullWidth
-            helperText={formErrors.batches ? formErrors.batches.message : ""}
-            label="Batches"
-            name="batches"
-            onChange={onInputChange}
-            placeholder="5"
-            type="number"
-            value={inputs.batches}
-            variant="outlined"
-          />
-        </Grid>
-      </Grid>
-      <Typography variant="subtitle1">{renderOrderSummary()}</Typography>
-      <Button
-        className="btn btn-primary"
-        color="primary"
-        onClick={onSubmitClick}
-        variant="contained"
-      >
-        Vulcanize!
-      </Button>
+            <Box className={classes.inputIconWrapper}>
+              <FrequencyIcon />
+            </Box>
+            <Box>
+              <Select
+                className={classes.frequencyInput}
+                classes={{ root: classes.selectRoot }}
+                color="primary"
+                fullWidth
+                name="frequency"
+                onChange={onInputChange}
+                value={inputs.frequency}
+              >
+                {renderFrequencyOptions()}
+              </Select>
+            </Box>
+          </Box>
+        </Box>
+
+        <Button
+          className={classes.submitButton}
+          fullWidth
+          onClick={onSubmitClick}
+          variant="contained"
+        >
+          ENGAGE SWAP
+        </Button>
+
+      </div>
     </div>
   );
 };

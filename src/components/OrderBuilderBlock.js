@@ -1,18 +1,20 @@
 import React from 'react';
 
-import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import OrderForm from "./OrderForm";
-import TokenLiquidityContainer from "../containers/TokenLiquidityContainer";
 
-import { CLOUD_LIGHT } from '../theme/colors';
+import { BLUE_LIGHT5 } from '../theme/colors';
+import { BOX_SHADOW_2 } from '../theme/styles';
 
 const useStyles = makeStyles({
   root: {
+    background: BLUE_LIGHT5,
     borderRadius: 15,
-    background: CLOUD_LIGHT,
-    padding: 40
+    boxShadow: BOX_SHADOW_2,
+    maxWidth: 550,
+    margin: "-140px auto 48px",
+    overflow: "hidden"
   }
 });
 
@@ -25,29 +27,19 @@ const OrderBuilderBlock = props => {
     newOrderInputs,
     onOrderInputChange,
     onOrderSubmitClick,
+    sourceTokenBalance
   } = props;
 
   return (
     <div className={classes.root}>
-      {/* <Typography variant="h3">New Order</Typography> */}
-      <Grid container>
-        <Grid item xs={12}>
-          <OrderForm
-            formErrors={formErrors}
-            inputs={newOrderInputs}
-            networkId={networkId}
-            onSubmitClick={onOrderSubmitClick}
-            onInputChange={onOrderInputChange}
-          />
-        </Grid>
-        {newOrderInputs.targetTokenAddress &&
-          <Grid item xs={12} sm={6} md={5} lg={4}>
-            <TokenLiquidityContainer
-              targetTokenAddress={newOrderInputs.targetTokenAddress}
-            />
-          </Grid>
-        }
-      </Grid>
+      <OrderForm
+        formErrors={formErrors}
+        inputs={newOrderInputs}
+        networkId={networkId}
+        onSubmitClick={onOrderSubmitClick}
+        onInputChange={onOrderInputChange}
+        sourceTokenBalance={sourceTokenBalance}
+      />
     </div>
   );
 };

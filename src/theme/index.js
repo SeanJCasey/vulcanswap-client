@@ -1,8 +1,14 @@
 import { createMuiTheme } from "@material-ui/core/styles";
 
 import {
+  BLUE_DARK4,
+  BLUE_LIGHT1,
+  BLUE_LIGHT5,
   COLOR_PRIMARY,
-  COLOR_SECONDARY
+  COLOR_SECONDARY,
+  GRAY_DARK4,
+  YELLOW,
+  YELLOW_DARK5
 } from './colors';
 
 const theme = createMuiTheme({
@@ -13,6 +19,9 @@ const theme = createMuiTheme({
     },
     secondary: {
       main: COLOR_SECONDARY
+    },
+    text: {
+      primary: GRAY_DARK4
     }
   },
   typography: {
@@ -73,25 +82,29 @@ const theme = createMuiTheme({
       fontWeight: '400',
       lineHeight: '20px'
     },
-  // overrides: {
-  //   MuiButton: {
-  //     root: {
-  //       borderRadius: 8,
-  //       padding: '12px',
-  //       textTransform: 'none'
-  //     },
-  //     outlined: {
-  //       borderColor: CLOUD_DARK,
-  //       color: ONYX_LIGHT,
-  //       padding: '12px'
-  //     },
-  //     contained: {
-  //       background: `linear-gradient(187.65deg, ${COLOR_PRIMARY} 0%, ${PURPLE_DARK} 243.39%)`,
-  //       border: 0,
-  //       color: WHITE,
-  //       padding: '12px'
-  //     }
-  //   },
+  },
+  overrides: {
+    MuiButton: {
+      root: {
+        borderRadius: 5,
+        padding: '7px 14px',
+        textTransform: 'none'
+      },
+      outlined: {
+        backgroundColor: BLUE_LIGHT5,
+        borderColor: BLUE_LIGHT1,
+        color: BLUE_DARK4,
+        // padding: '12px'
+      },
+      contained: {
+        backgroundColor: YELLOW,
+        border: 0,
+        color: YELLOW_DARK5,
+        '&:hover': {
+          backgroundColor: YELLOW
+        }
+      }
+    },
   //   MuiTextField: {
   //     root: {
   //       color: ONYX_DARKEST,
@@ -112,7 +125,7 @@ const theme = createMuiTheme({
   //         }
   //       }
   //     }
-  //   }
+    // }
   }
 });
 

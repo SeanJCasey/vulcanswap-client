@@ -1,17 +1,28 @@
 import React from 'react';
 
 import {
+  Box,
   Button,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TableRow
+  TableRow,
+  Typography
 } from '@material-ui/core';
+import {
+  ArrowRightAlt as ArrowIcon
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
 import { TIMETABLE } from '../constants';
-import { dateObjDisplayFormatter, getTokenTableForNetwork } from '../utils';
+import {
+  dateObjDisplayFormatter,
+  getTokenTableForNetwork,
+  truncateAmountToMaxDecimals
+} from '../utils';
+
+import { COLOR_PRIMARY, GRAY, GRAY_LIGHT4, RED } from '../theme/colors';
 
 const ORDER_STATES = {
   FAILED: 0,
@@ -21,10 +32,45 @@ const ORDER_STATES = {
 }
 
 const useStyles = makeStyles({
+  arrowIconWrapper: {
+    height: '100%',
+    margin: '0 10px',
+    '& svg': {
+      fill: COLOR_PRIMARY,
+      height: '100%',
+      verticalAlign: 'middle',
+      width: 36
+    }
+  },
+  batchesWrapper: {
+    fontSize: 24,
+    padding: "6px 0"
+  },
+  cancelButton: {
+    color: RED
+  },
+  lastSwapWrapper: {
+    padding: "6px 0"
+  },
   ordersActiveWrapper: {},
   ordersArchivedWrapper: {},
   root: {},
-  tableCell: {}
+  secondaryText: {
+    color: GRAY
+  },
+  tableCell: {},
+  tableRow: {
+    '&.inactive': {
+      backgroundColor: GRAY_LIGHT4,
+      opacity: 0.7
+    },
+  },
+  tokenIcon: {
+    verticalAlign: 'middle'
+  },
+  tokenIconWrapper: {
+    marginRight: 5
+  }
 });
 
 const OrderTable = props => {
@@ -43,31 +89,106 @@ const OrderTable = props => {
   const getOrdersColLabels = type => {
     switch (type) {
       case 'archived':
-        return ["Order #", "Contributed", "Converted", "Batches", "Frequency", "Last Trade", "Status"];
+        return ["Swapped", "Total Swaps", "Last Swap", "Status"];
       case 'active':
       default:
-        return ["Order #", "Contributed", "Converted", "Batches", "Frequency", "Last Trade", "Next Trade"];
+        return ["Swapped", "Total Swaps", "Last Swap", ""];
     }
   };
 
-  const getOrderTableValues = (order, type) => {
-    const batchesExecuted = `${order.batchesExecuted} / ${order.batches}`;
+  const displayAmount = (amount, symbol) => `${amount} ${symbol}`;
+
+  const renderToken = (amount, token) =>
+    <Box className="tokenWrapper" display="flex" alignItems="center">
+      <Box className={classes.tokenIconWrapper}>
+        <img
+          alt={token.name}
+          className={classes.tokenIcon}
+          height={24}
+          src={token.icon}
+          width={24}
+        />
+      </Box>
+      <Box>
+        <Typography variant="body1">{displayAmount(amount, token.symbol)}</Typography>
+      </Box>
+    </Box>
+
+  const getOrderTableValues = order => {
+    const sourceToken = tokenTable[order.sourceCurrency];
+    const sourceConverted = truncateAmountToMaxDecimals(order.sourceCurrencyConverted, 2);
+    const sourceRemaining = truncateAmountToMaxDecimals(order.amount - sourceConverted, 2);
+
+    const targetToken = tokenTable[order.targetCurrency];
+    const targetConverted = truncateAmountToMaxDecimals(order.targetCurrencyConverted, 2);
+
+    const frequency = TIMETABLE[order.frequency] ? TIMETABLE[order.frequency] : `${order.frequency} seconds`;
+
     const conversionLast = order.lastConversionTimestamp > 0 ? dateObjDisplayFormatter(new Date(order.lastConversionTimestamp * 1000)) : "n/a";
     const conversionNext = order.nextConversionTimestamp > 0 ? dateObjDisplayFormatter(new Date(order.nextConversionTimestamp * 1000)) : "overdue!";
-    const id = order.id;
-    const frequency = TIMETABLE[order.frequency] ? TIMETABLE[order.frequency] : `${order.frequency} seconds`;
-    const sourceCurrencyInitial = `${order.amount} ${tokenTable[order.sourceCurrency].symbol}`;
-    const status = orderStateLabels[order.status];
-    const targetCurrencyConverted = `${Number(order.targetCurrencyConverted).toFixed(4)} ${tokenTable[order.targetCurrency].symbol}`;
 
-    switch (type) {
-      case 'archived':
-        return [id, sourceCurrencyInitial, targetCurrencyConverted, batchesExecuted, frequency, conversionLast, status];
-      case 'active':
-      default:
-        return [id, sourceCurrencyInitial, targetCurrencyConverted, batchesExecuted, frequency, conversionLast, conversionNext];
+    const renderLastSwap = () =>
+      <React.Fragment>
+        <div className={classes.lastSwapWrapper}>
+          <Typography
+            component="p"
+            variant="h6"
+          >
+            {conversionLast}
+          </Typography>
+        </div>
+        <Typography
+          className={classes.secondaryText}
+          variant="subtitle1"
+        >
+          Next: {conversionNext}
+        </Typography>
+      </React.Fragment>
 
-    }
+    const renderSwapped = () =>
+      <React.Fragment>
+        <Box className="tokenWrapper" display="flex" alignItems="center" justifyContent="center">
+          {renderToken(sourceConverted, sourceToken)}
+          <Box className={classes.arrowIconWrapper}>
+            <ArrowIcon />
+          </Box>
+          {renderToken(targetConverted, targetToken)}
+        </Box>
+        <Typography
+          className={classes.secondaryText}
+          variant="subtitle1"
+        >
+          {displayAmount(sourceRemaining, sourceToken.symbol)} remaining
+        </Typography>
+      </React.Fragment>
+
+    const renderTotalSwaps = () =>
+      <React.Fragment>
+        <div className={classes.batchesWrapper}>
+          <Typography
+            component="p"
+            variant="h5"
+          >
+            {order.batchesExecuted} of {order.batches}
+          </Typography>
+        </div>
+        <Typography
+          className={classes.secondaryText}
+          variant="subtitle1"
+        >
+          {frequency}
+        </Typography>
+      </React.Fragment>
+
+    return [renderSwapped(), renderTotalSwaps(), renderLastSwap()];
+
+    // switch (type) {
+    //   case 'archived':
+    //     return [renderSwapped(), renderTotalSwaps(), renderLastSwap(), status];
+    //   case 'active':
+    //   default:
+    //     return [renderSwapped(), renderTotalSwaps(), renderLastSwap()];
+    // }
   };
 
   const getFormattedOrders = () => {
@@ -78,15 +199,15 @@ const OrderTable = props => {
         const order = {
           id: orderState.value.id_,
           amount: drizzle.web3.utils.fromWei(orderState.value.amount_, 'ether'),
-          sourceCurrency: orderState.value.sourceCurrency_,
-          targetCurrency: orderState.value.targetCurrency_,
-          status: Number(orderState.value.state_),
-          frequency: Number(orderState.value.frequency_),
           batches: Number(orderState.value.batches_),
           batchesExecuted: Number(orderState.value.batchesExecuted_),
-          targetCurrencyConverted: drizzle.web3.utils.fromWei(orderState.value.targetCurrencyConverted_),
+          frequency: Number(orderState.value.frequency_),
           lastConversionTimestamp: Number(orderState.value.lastConversionTimestamp_),
-          sourceCurrencyBalance: drizzle.web3.utils.fromWei(orderState.value.sourceCurrencyBalance_)
+          status: Number(orderState.value.state_),
+          sourceCurrency: orderState.value.sourceCurrency_,
+          sourceCurrencyConverted: drizzle.web3.utils.fromWei(orderState.value.sourceCurrencyConverted_),
+          targetCurrency: orderState.value.targetCurrency_,
+          targetCurrencyConverted: drizzle.web3.utils.fromWei(orderState.value.targetCurrencyConverted_)
         }
         order['nextConversionTimestamp'] = order['lastConversionTimestamp'] > 0 ? order['lastConversionTimestamp'] + order['frequency'] : 0;
         orders.push(order);
@@ -95,45 +216,84 @@ const OrderTable = props => {
     return orders;
   }
 
-  const renderOrdersActive = orders =>
-    ordersActive.map((order, i) =>
-      <TableRow key={order.id}>
-        {getOrderTableValues(order, 'active').map((value, j) =>
+  const renderOrders = () =>
+    orders.map((order, i) =>
+      <TableRow
+        className={`${classes.tableRow} ${order.status === ORDER_STATES.ACTIVE ? "active" : "inactive"}`}
+        key={order.id}
+      >
+        {getOrderTableValues(order).map((value, j) =>
           <TableCell
             key={j}
             align="center"
-            padding="none"
             className={classes.tableCell}
           >
             {value}
           </TableCell>
         )}
-        <TableCell>
-          <Button
-            onClick={() => onCancelOrderClick(order.id)}
-            variant="outlined"
+        {order.status === ORDER_STATES.ACTIVE ? (
+          <TableCell
+            align="center"
           >
-            Cancel
-          </Button>
-        </TableCell>
+            <Button
+              className={classes.cancelButton}
+              onClick={() => onCancelOrderClick(order.id)}
+              size="small"
+            >
+              Cancel
+            </Button>
+          </TableCell>
+        ) : (
+          <TableCell
+            key={`status-${i}`}
+            align="center"
+            className={classes.tableCell}
+          >
+            {orderStateLabels[order.status]}
+          </TableCell>
+        )}
+
       </TableRow>
     );
 
-  const renderOrdersArchived = orders =>
-    ordersArchived.map((order, i) =>
-      <TableRow key={order.id}>
-        {getOrderTableValues(order, 'archived').map((value, j) =>
-          <TableCell
-            key={j}
-            align="center"
-            padding="none"
-            className={classes.tableCell}
-          >
-            {value}
-          </TableCell>
-        )}
-      </TableRow>
-    );
+//   const renderOrdersActive = () =>
+//     ordersActive.map((order, i) =>
+//       <TableRow className={classes.tableRow} key={order.id}>
+//         {getOrderTableValues(order, 'active').map((value, j) =>
+//           <TableCell
+//             key={j}
+//             align="center"
+//             className={classes.tableCell}
+//           >
+//             {value}
+//           </TableCell>
+//         )}
+//         <TableCell>
+//           <Button
+//             className={classes.cancelButton}
+//             onClick={() => onCancelOrderClick(order.id)}
+//             size="small"
+//           >
+//             Cancel
+//           </Button>
+//         </TableCell>
+//       </TableRow>
+//     );
+//
+//   const renderOrdersArchived = () =>
+//     ordersArchived.map((order, i) =>
+//       <TableRow key={order.id}>
+//         {getOrderTableValues(order, 'archived').map((value, j) =>
+//           <TableCell
+//             key={j}
+//             align="center"
+//             className={classes.tableCell}
+//           >
+//             {value}
+//           </TableCell>
+//         )}
+//       </TableRow>
+//     );
 
   const renderOrdersTableHead = type =>
     <TableRow>
@@ -141,7 +301,6 @@ const OrderTable = props => {
         <TableCell
           key={label}
           align="center"
-          padding="none"
           className={classes.tableCell}
         >
           {label}
@@ -152,37 +311,36 @@ const OrderTable = props => {
   const orders = getFormattedOrders();
   if (!(orders.length > 0)) return null;
 
-  const ordersActive = orders.filter(order => order.status === ORDER_STATES.ACTIVE);
-  const ordersArchived = orders.filter(order => order.status !== ORDER_STATES.ACTIVE);
+  // const ordersActive = orders.filter(order => order.status === ORDER_STATES.ACTIVE);
+  // const ordersArchived = orders.filter(order => order.status !== ORDER_STATES.ACTIVE);
 
   return (
     <div className={classes.root}>
       {orders.length > 0 &&
         <div className={classes.ordersActiveWrapper}>
-          <h2>Active Orders</h2>
-          <Table className={classes.table} size="small">
+          <Table className={classes.table}>
             <TableHead>
               {renderOrdersTableHead('active')}
             </TableHead>
             <TableBody>
-              {renderOrdersActive(ordersActive)}
+              {renderOrders(orders)}
             </TableBody>
           </Table>
         </div>
       }
-      {ordersArchived.length > 0 &&
-        <div className={classes.ordersArchivedWrapper}>
-          <h2>Archived Orders</h2>
-          <Table className={classes.table} size="small">
-            <TableHead>
-              {renderOrdersTableHead('archived')}
-            </TableHead>
-            <TableBody>
-              {renderOrdersArchived(ordersArchived)}
-            </TableBody>
-          </Table>
-        </div>
-      }
+      {/* {ordersArchived.length > 0 && */}
+      {/*   <div className={classes.ordersArchivedWrapper}> */}
+      {/*     <h2>Archived Orders</h2> */}
+      {/*     <Table className={classes.table} size="small"> */}
+      {/*       <TableHead> */}
+      {/*         {renderOrdersTableHead('archived')} */}
+      {/*       </TableHead> */}
+      {/*       <TableBody> */}
+      {/*         {renderOrdersArchived(ordersArchived)} */}
+      {/*       </TableBody> */}
+      {/*     </Table> */}
+      {/*   </div> */}
+      {/* } */}
     </div>
   );
 };

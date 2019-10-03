@@ -5,14 +5,12 @@ import { Drizzle, generateStore } from "drizzle";
 import { DrizzleContext } from "drizzle-react";
 import drizzleOptions from "./drizzleOptions";
 
+import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 
 import theme from './theme';
 
 import AppContainer from './containers/AppContainer';
-
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import './App.scss';
 
 const drizzleStore = generateStore(drizzleOptions);
 const drizzle = new Drizzle(drizzleOptions, drizzleStore);
@@ -20,6 +18,7 @@ const drizzle = new Drizzle(drizzleOptions, drizzleStore);
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <DrizzleContext.Provider drizzle={drizzle}>
+      <CssBaseline />
       <AppContainer />
     </DrizzleContext.Provider>
   </ThemeProvider>,

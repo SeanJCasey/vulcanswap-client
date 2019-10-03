@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { DrizzleContext } from "drizzle-react";
+import { DrizzleContext } from 'drizzle-react';
 
-import OrderTable from "../components/OrderTable";
+import NewUserCTA from '../components/NewUserCTA';
+import OrderTable from '../components/OrderTable';
 
 class OrderTableContainer extends Component {
   state = {
@@ -49,6 +50,8 @@ class OrderTableContainer extends Component {
   render() {
     const { drizzle, drizzleState } = this.context;
     const { orderKeys } = this.state;
+
+    if (orderKeys.length === 0) return <NewUserCTA />
 
     return (
       <OrderTable
