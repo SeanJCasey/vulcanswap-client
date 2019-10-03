@@ -32838,6 +32838,103 @@
     "version": "0.5.8+commit.23d335f2.Emscripten.clang"
   },
   "networks": {
+    "4": {
+      "events": {
+        "0xef737f0fa1786a14bb1cc1ab889557c33fcea01691acf7e7e03e850aeff60d27": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "_orderId",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewOrder",
+          "type": "event",
+          "signature": "0xef737f0fa1786a14bb1cc1ab889557c33fcea01691acf7e7e03e850aeff60d27"
+        },
+        "0x9d40ca1b3e814a14204b5f836713067684a9facb9cdcf1524d819d5ecccce7d3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "_orderId",
+              "type": "uint256"
+            }
+          ],
+          "name": "OrderConversion",
+          "type": "event",
+          "signature": "0x9d40ca1b3e814a14204b5f836713067684a9facb9cdcf1524d819d5ecccce7d3"
+        },
+        "0xc0e68d6b69f741c21e955cad2ae4d505b6f6735c7e7b278251b3f6283a5f07eb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "_orderId",
+              "type": "uint256"
+            }
+          ],
+          "name": "CancelOrder",
+          "type": "event",
+          "signature": "0xc0e68d6b69f741c21e955cad2ae4d505b6f6735c7e7b278251b3f6283a5f07eb"
+        },
+        "0xeee53a62339b3b3432b27f55ba4665e4256566e4aadf3f0f094a6bfe9e1f8363": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "_orderId",
+              "type": "uint256"
+            }
+          ],
+          "name": "CompleteOrder",
+          "type": "event",
+          "signature": "0xeee53a62339b3b3432b27f55ba4665e4256566e4aadf3f0f094a6bfe9e1f8363"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event",
+          "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+        }
+      },
+      "links": {},
+      "address": "0x7175561aa2c5cdD0fbFB0C59a5b30e0080F2836B",
+      "transactionHash": "0x6a18b5c1f5bab7848413bf9a86aaad84205fbca078a233feb1ff2484ae1982c6"
+    },
     "5777": {
       "events": {
         "0xef737f0fa1786a14bb1cc1ab889557c33fcea01691acf7e7e03e850aeff60d27": {
@@ -32937,7 +33034,7 @@
     }
   },
   "schemaVersion": "3.0.16",
-  "updatedAt": "2019-10-03T13:11:44.165Z",
+  "updatedAt": "2019-10-03T13:57:17.331Z",
   "devdoc": {
     "methods": {
       "isOwner()": {
