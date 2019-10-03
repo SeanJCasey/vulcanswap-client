@@ -13,7 +13,8 @@ const useStyles = makeStyles({
   optionIconWrapper: {
     marginRight: 7,
     '& img': {
-      verticalAlign: 'middle'
+      verticalAlign: 'middle',
+      width: 28
     }
   },
   selectRoot: {

@@ -4,8 +4,12 @@ import MoonToken from './contracts/MoonToken.json';
 import SeanToken from './contracts/SeanToken.json';
 import UniswapFactory from './contracts/uniswap_factory.json';
 
+import BATIcon from './assets/icons/bat.svg';
 import DaiIcon from './assets/icons/dai.svg';
 import EthereumIcon from './assets/icons/ethereum.svg';
+import MakerIcon from './assets/icons/mkr.svg';
+import OmiseGoIcon from './assets/icons/omg.svg';
+import ZRXIcon from './assets/icons/zrx.svg';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -35,6 +39,7 @@ const TOKENTABLE_RINKEBY = {
   [RINKEBY_BAT_ADDRESS]: {
     address: RINKEBY_BAT_ADDRESS,
     exchange: '0x9B913956036a3462330B0642B20D3879ce68b450',
+    icon: BATIcon,
     isSource: false,
     name: 'Basic Attention Token',
     symbol: 'BAT'
@@ -42,6 +47,7 @@ const TOKENTABLE_RINKEBY = {
   [RINKEBY_MKR_ADDRESS]: {
     address: RINKEBY_MKR_ADDRESS,
     exchange: '0x93bB63aFe1E0180d0eF100D774B473034fd60C36',
+    icon: MakerIcon,
     isSource: false,
     name: 'Maker DAO',
     symbol: 'MKR'
@@ -49,6 +55,7 @@ const TOKENTABLE_RINKEBY = {
   [RINKEBY_OMG_ADDRESS]: {
     address: RINKEBY_OMG_ADDRESS,
     exchange: '0x26C226EBb6104676E593F8A070aD6f25cDa60F8D',
+    icon: OmiseGoIcon,
     isSource: false,
     name: 'Omise Go',
     symbol: 'OMG'
@@ -56,6 +63,7 @@ const TOKENTABLE_RINKEBY = {
   [RINKEBY_ZRX_ADDRESS]: {
     address: RINKEBY_ZRX_ADDRESS,
     exchange: '0xaBD44a1D1b9Fb0F39fE1D1ee6b1e2a14916D067D',
+    icon: ZRXIcon,
     isSource: false,
     name: '0x Protocol',
     symbol: 'ZRX'
