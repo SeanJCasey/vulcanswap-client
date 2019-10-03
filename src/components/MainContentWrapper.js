@@ -14,7 +14,7 @@ class MainContentWrapper extends Component {
 
     return(
       <div className={classes.root}>
-        <Container maxWidth="md">{children}</Container>
+        <Container maxWidth="lg">{children}</Container>
       </div>
     );
   }
