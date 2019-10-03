@@ -4,6 +4,10 @@ import {
   Box,
   Button,
   Input,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   MenuItem,
   Select,
   Typography
@@ -11,6 +15,7 @@ import {
 import {
   ArrowRightAlt as ArrowIcon,
   Alarm as FrequencyIcon,
+  Error as ErrorIcon,
   FilterNone as BatchesIcon
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
@@ -23,6 +28,7 @@ import {
   GRAY_DARK1,
   GRAY,
   GRAY_LIGHT5,
+  RED_DARK1,
   WHITE
 } from '../theme/colors';
 import { truncateAmountToMaxDecimals } from '../utils';
@@ -61,6 +67,16 @@ const useStyles = makeStyles({
   formBottomWrapper: {
     padding: "24px 48px"
   },
+  formErrorIconWrapper: {
+    color: RED_DARK1,
+    minWidth: 35
+  },
+  formErrorsWrapper: {
+    marginTop: 10
+  },
+  formErrorText: {
+    color: RED_DARK1
+  },
   formTopWrapper: {
     backgroundColor: WHITE,
     padding: "32px 48px"
@@ -72,7 +88,6 @@ const useStyles = makeStyles({
     padding: '0 10px'
   },
   frequencyInputWrapper: {
-    // marginTop: 20
     marginLeft: 48
   },
   inputHelperText: {
@@ -123,9 +138,12 @@ const OrderForm = props => {
   } = props;
 
   const tokenTable = useTokenTable(networkId);
-  const tokenOptions = Object.values(tokenTable);
-  const sourceTokenOptions = tokenOptions.filter(token => ["DAI", "ETH"].includes(token.symbol));
-  const sourceSymbol = inputs.sourceTokenAddress ? tokenTable[inputs.sourceTokenAddress].symbol : "[TOKEN]";
+  let tokenOptions, sourceTokenOptions, sourceSymbol;
+  if (tokenTable) {
+    tokenOptions = Object.values(tokenTable);
+    sourceTokenOptions = tokenOptions.filter(token => ["DAI", "ETH"].includes(token.symbol));
+    sourceSymbol = inputs.sourceTokenAddress ? tokenTable[inputs.sourceTokenAddress].symbol : "[TOKEN]";
+  }
 
   const renderFrequencyOptions = () =>
     Object.keys(TIMETABLE).map(seconds =>
@@ -216,7 +234,6 @@ const OrderForm = props => {
       </div>
 
       <div className={classes.formBottomWrapper}>
-
         <Box
           alignItems="center"
           display="flex"
@@ -276,13 +293,32 @@ const OrderForm = props => {
           </Box>
         </Box>
 
+        {Object.keys(formErrors).length > 0 &&
+          <div className={classes.formErrorsWrapper}>
+            <List dense>
+              {Object.keys(formErrors).map(field =>
+                <ListItem key={field}>
+                  <ListItemIcon className={classes.formErrorIconWrapper}>
+                    <ErrorIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    className={classes.formErrorText}
+                    primary={`${field}: ${formErrors[field].message}`}
+                    variant="subtitle2"
+                  />
+                </ListItem>
+              )}
+            </List>
+          </div>
+        }
+
         <Button
           className={classes.submitButton}
           fullWidth
           onClick={onSubmitClick}
           variant="contained"
         >
-          ENGAGE SWAP
+          VUNCANIZE
         </Button>
 
       </div>

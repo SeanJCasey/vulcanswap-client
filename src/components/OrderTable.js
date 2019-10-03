@@ -124,8 +124,10 @@ const OrderTable = props => {
 
     const frequency = TIMETABLE[order.frequency] ? TIMETABLE[order.frequency] : `${order.frequency} seconds`;
 
-    const conversionLast = order.lastConversionTimestamp > 0 ? dateObjDisplayFormatter(new Date(order.lastConversionTimestamp * 1000)) : "n/a";
-    const conversionNext = order.nextConversionTimestamp > 0 ? dateObjDisplayFormatter(new Date(order.nextConversionTimestamp * 1000)) : "overdue!";
+    const conversionLast = dateObjDisplayFormatter(new Date(order.lastConversionTimestamp * 1000));
+    const conversionNext = order.status === ORDER_STATES.ACTIVE ?
+      dateObjDisplayFormatter(new Date(order.nextConversionTimestamp * 1000)) :
+      "Finished";
 
     const renderLastSwap = () =>
       <React.Fragment>

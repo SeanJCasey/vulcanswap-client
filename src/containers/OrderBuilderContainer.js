@@ -23,14 +23,21 @@ class OrderBuilderContainer extends Component {
     tokenBalanceKeys: {}
   };
 
+  networkId = null;
+  tokenTable = {};
+
   componentDidMount() {
     const { drizzle, drizzleState } = this.context;
 
+    // Set networkId and tokenTable in local memory
+    const networkId = drizzle.store.getState().web3.networkId;
+    this.networkId = networkId;
+    const tokenTable = getTokenTableForNetwork(networkId);
+    this.tokenTable = tokenTable;
+
+    // Set order default values
     this.setOrderDefaults();
 
-    const account = drizzleState.accounts[0];
-    const networkId = drizzle.store.getState().web3.networkId;
-    const tokenTable = getTokenTableForNetwork(networkId);
     const contract = drizzle.contracts.CostAverageOrderBook;
 
     // Monitor order limits
@@ -45,6 +52,7 @@ class OrderBuilderContainer extends Component {
     }
 
     // Monitor token balances
+    const account = drizzleState.accounts[0];
     const erc20Tokens = Object.values(tokenTable).filter(token => token.address !== ADDRESS_ZERO);
     let tokenBalanceKeys = {}
     for (const erc20Token of erc20Tokens) {
@@ -115,9 +123,8 @@ class OrderBuilderContainer extends Component {
   }
 
   setOrderDefaults() {
-    const { drizzle } = this.context;
+    const { networkId } = this;
 
-    const networkId = drizzle.store.getState().web3.networkId;
     const sourceTokenAddress = findTokenByFieldName("symbol", "DAI", networkId).address;
     const targetTokenAddress = findTokenByFieldName("symbol", "ETH", networkId).address;
 
@@ -133,9 +140,12 @@ class OrderBuilderContainer extends Component {
   }
 
   validateOrderForm() {
-    const { orderParamLimitsKey, sourceCurrencyLimitsKeys } = this.state;
-    const { batches, quantity, sourceTokenAddress } = this.state.newOrderInputs;
     const { drizzle, drizzleState } = this.context;
+    const { orderParamLimitsKey, sourceCurrencyLimitsKeys } = this.state;
+    const { batches, quantity, sourceTokenAddress, targetTokenAddress } = this.state.newOrderInputs;
+    const { tokenTable } = this;
+
+    const sourceToken = tokenTable[sourceTokenAddress];
     const contract = drizzleState.contracts.CostAverageOrderBook;
 
     const { minBatches_, maxBatches_ } = contract.getOrderParamLimits[orderParamLimitsKey].value;
@@ -146,17 +156,20 @@ class OrderBuilderContainer extends Component {
     const minAmountFormatted = drizzle.web3.utils.fromWei(String(minAmount), 'ether');
     const maxAmountFormatted = drizzle.web3.utils.fromWei(String(maxAmount), 'ether');
 
+    if (sourceTokenAddress === targetTokenAddress) {
+      formErrors['tokens'] = { message: "You can't swap for the same token!" }
+    }
     if (quantity < Number(minAmountFormatted)) {
-      formErrors['quantity'] = { message: `Must be greater than ${minAmountFormatted}` };
+      formErrors['amount'] = { message: `must be at least ${minAmountFormatted} ${sourceToken.symbol}` };
     }
     if (quantity > Number(maxAmountFormatted)) {
-      formErrors['quantity'] = { message: `Must be less than ${maxAmountFormatted}` };
+      formErrors['amount'] = { message: `must be ${maxAmountFormatted} ${sourceToken.symbol} or less` };
     }
     if (batches < Number(minBatches_)) {
-      formErrors['batches'] = { message: `Must be greater than ${minBatches_}` };
+      formErrors['batches'] = { message: `must be at least ${minBatches_}` };
     }
     if (batches > Number(maxBatches_)) {
-      formErrors['batches'] = { message: `Must be less than ${maxBatches_}` };
+      formErrors['batches'] = { message: `must be ${maxBatches_} or less` };
     }
 
     return formErrors;
@@ -175,24 +188,19 @@ class OrderBuilderContainer extends Component {
   handleOrderSubmitClick = event => {
     const formErrors = this.validateOrderForm();
 
-    if (Object.keys(formErrors).length) {
-      this.setState({ formErrors });
-    }
-    else {
+    this.setState({ formErrors });
+    if (Object.keys(formErrors).length === 0) {
       this.createOrder();
     }
   }
 
   render() {
-    const { drizzle } = this.context;
     const { formErrors, newOrderInputs } = this.state;
+    const { networkId, tokenTable } = this;
 
-    const networkId = drizzle.store.getState().web3.networkId;
-    const tokenTable = getTokenTableForNetwork(networkId)
-    const sourceToken = tokenTable[newOrderInputs.sourceTokenAddress];
-
-    let sourceTokenBalance;
-    if (sourceToken) {
+    let sourceToken, sourceTokenBalance;
+    if (tokenTable) {
+      sourceToken = tokenTable[newOrderInputs.sourceTokenAddress];
       sourceTokenBalance = this.getTokenBalance(sourceToken);
     }
 
