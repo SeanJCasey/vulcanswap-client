@@ -4,6 +4,9 @@ import MoonToken from './contracts/MoonToken.json';
 import SeanToken from './contracts/SeanToken.json';
 import UniswapFactory from './contracts/uniswap_factory.json';
 
+import DaiIcon from './assets/icons/dai.svg';
+import EthereumIcon from './assets/icons/ethereum.svg';
+
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
 //Rinkeby
@@ -16,6 +19,7 @@ const RINKEBY_ZRX_ADDRESS = '0xF22e3F33768354c9805d046af3C0926f27741B43';
 const TOKENTABLE_RINKEBY = {
   [ADDRESS_ZERO]: {
     address: ADDRESS_ZERO,
+    icon: EthereumIcon,
     isSource: true,
     name: 'Ethereum',
     symbol: 'ETH'
@@ -23,6 +27,7 @@ const TOKENTABLE_RINKEBY = {
   [RINKEBY_DAI_ADDRESS]: {
     address: RINKEBY_DAI_ADDRESS,
     exchange: '0x77dB9C915809e7BE439D2AB21032B1b8B58F6891',
+    icon: DaiIcon,
     isSource: true,
     name: 'Dai Stablecoin',
     symbol: 'DAI'
@@ -66,12 +71,14 @@ const GANACHE_LUB_ADDRESS = ConsensysToken.networks['5777'].address;
 const TOKENTABLE_GANACHE = {
   [ADDRESS_ZERO]: {
     address: ADDRESS_ZERO,
+    icon: EthereumIcon,
     isSource: true,
     name: 'Ethereum',
     symbol: 'ETH'
   },
   [GANACHE_DAI_ADDRESS]: {
     address: GANACHE_DAI_ADDRESS,
+    icon: DaiIcon,
     isSource: true,
     name: 'Fake DAI',
     symbol: 'DAI'
@@ -102,10 +109,10 @@ export const TOKENTABLES = {
 }
 
 export const TIMETABLE = {
-  3600: '1 hour',
-  86400: '1 day',
-  604800: '1 week',
-  18144000: '1 month',
+  3600: 'hourly',
+  86400: 'daily',
+  604800: 'weekly',
+  18144000: 'monthly',
 }
 
 export const UNISWAP_FACTORY_ADDRESSES = {
