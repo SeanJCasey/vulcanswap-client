@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/styles';
 // import AdminPage from '../containers/AdminPage';
 import CostAverageOrderBookPage from '../containers/CostAverageOrderBookPage';
 import useAddContracts from '../effects/useAddContracts';
+import FooterBlock from './FooterBlock';
 import Navbar from './Navbar';
 
 const useStyles = makeStyles({
@@ -37,6 +38,7 @@ const App = props => {
         {/*   exact */}
         {/*   component={AdminPage} */}
         {/* /> */}
+        <FooterBlock />
       </Router>
     </div>
   );
