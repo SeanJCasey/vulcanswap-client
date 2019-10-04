@@ -15,7 +15,12 @@ export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
 //Rinkeby
 const RINKEBY_BAT_ADDRESS = '0xDA5B056Cfb861282B4b59d29c9B395bcC238D29B';
-const RINKEBY_DAI_ADDRESS = '0x2448eE2641d78CC42D7AD76498917359D961A783';
+
+// Uniswap's DAI
+// const RINKEBY_DAI_ADDRESS = '0x2448eE2641d78CC42D7AD76498917359D961A783';
+// Compound's DAI
+const RINKEBY_DAI_ADDRESS = '0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa';
+
 const RINKEBY_MKR_ADDRESS = '0xF9bA5210F91D0474bd1e1DcDAeC4C58E359AaD85';
 const RINKEBY_OMG_ADDRESS = '0x879884c3C46A24f56089f3bBbe4d5e38dB5788C0';
 const RINKEBY_ZRX_ADDRESS = '0xF22e3F33768354c9805d046af3C0926f27741B43';
@@ -30,7 +35,7 @@ const TOKENTABLE_RINKEBY = {
   },
   [RINKEBY_DAI_ADDRESS]: {
     address: RINKEBY_DAI_ADDRESS,
-    exchange: '0x77dB9C915809e7BE439D2AB21032B1b8B58F6891',
+    // exchange: '',
     icon: DaiIcon,
     isSource: true,
     name: 'Dai Stablecoin',
@@ -38,7 +43,7 @@ const TOKENTABLE_RINKEBY = {
   },
   [RINKEBY_BAT_ADDRESS]: {
     address: RINKEBY_BAT_ADDRESS,
-    exchange: '0x9B913956036a3462330B0642B20D3879ce68b450',
+    // exchange: '0x9B913956036a3462330B0642B20D3879ce68b450',
     icon: BATIcon,
     isSource: false,
     name: 'Basic Attention Token',
@@ -46,7 +51,7 @@ const TOKENTABLE_RINKEBY = {
   },
   [RINKEBY_MKR_ADDRESS]: {
     address: RINKEBY_MKR_ADDRESS,
-    exchange: '0x93bB63aFe1E0180d0eF100D774B473034fd60C36',
+    // exchange: '0x93bB63aFe1E0180d0eF100D774B473034fd60C36',
     icon: MakerIcon,
     isSource: false,
     name: 'Maker DAO',
@@ -54,7 +59,7 @@ const TOKENTABLE_RINKEBY = {
   },
   [RINKEBY_OMG_ADDRESS]: {
     address: RINKEBY_OMG_ADDRESS,
-    exchange: '0x26C226EBb6104676E593F8A070aD6f25cDa60F8D',
+    // exchange: '0x26C226EBb6104676E593F8A070aD6f25cDa60F8D',
     icon: OmiseGoIcon,
     isSource: false,
     name: 'Omise Go',
@@ -62,7 +67,7 @@ const TOKENTABLE_RINKEBY = {
   },
   [RINKEBY_ZRX_ADDRESS]: {
     address: RINKEBY_ZRX_ADDRESS,
-    exchange: '0xaBD44a1D1b9Fb0F39fE1D1ee6b1e2a14916D067D',
+    // exchange: '0xaBD44a1D1b9Fb0F39fE1D1ee6b1e2a14916D067D',
     icon: ZRXIcon,
     isSource: false,
     name: '0x Protocol',
