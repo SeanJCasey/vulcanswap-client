@@ -16,9 +16,9 @@ import {
 import { makeStyles } from '@material-ui/styles';
 
 import { TIMETABLE } from '../constants';
+import useTokenTable from '../effects/useTokenTable';
 import {
   dateObjDisplayFormatter,
-  getTokenTableForNetwork,
   truncateAmountToMaxDecimals
 } from '../utils';
 
@@ -75,9 +75,9 @@ const useStyles = makeStyles({
 
 const OrderTable = props => {
   const classes = useStyles(props);
-  const { drizzle, drizzleState, onCancelOrderClick, orderKeys } = props;
-
-  const tokenTable = getTokenTableForNetwork(drizzle.store.getState().web3.networkId);
+  const { drizzle, drizzleState, networkId, onCancelOrderClick, orderKeys } = props;
+  const tokenTable = useTokenTable(networkId);
+  if (!tokenTable) return null;
 
   const orderStateLabels = {
     [ORDER_STATES.FAILED]: "Failed",

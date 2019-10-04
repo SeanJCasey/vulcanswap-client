@@ -50,6 +50,7 @@ class OrderTableContainer extends Component {
   render() {
     const { drizzle, drizzleState } = this.context;
     const { orderKeys } = this.state;
+    const networkId = drizzle.store.getState().web3.networkId;
 
     if (orderKeys.length === 0) return <NewUserCTA />
 
@@ -57,6 +58,7 @@ class OrderTableContainer extends Component {
       <OrderTable
         drizzle={drizzle}
         drizzleState={drizzleState}
+        networkId={networkId}
         onCancelOrderClick={this.handleCancelOrderClick}
         orderKeys={orderKeys}
       />
