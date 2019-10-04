@@ -118,7 +118,9 @@ class OrderBuilderContainer extends Component {
       if (!tokenBalanceKey) return null;
 
       const tokenBalanceRes = drizzleState.contracts[`I${token.symbol}`].balanceOf[tokenBalanceKey];
-      return tokenBalanceRes ? drizzle.web3.utils.fromWei(tokenBalanceRes.value, 'ether') : null;
+      return tokenBalanceRes && !isNaN(tokenBalanceRes.value) ?
+        drizzle.web3.utils.fromWei(tokenBalanceRes.value, 'ether') :
+        null;
     }
   }
 
