@@ -10,8 +10,8 @@ Follow the instructions in the `vulcanswap-truffle` repo for the full setup pipe
 
 ## Deploy Vulcan Swap client only
 
-1. Clone this repo and install dependencies
+### 1. Clone this repo and install dependencies
 `git clone git@github.com:SeanJCasey/vulcanswap-client.git && cd vulcanswap-client && npm i`
 
-2. Start the npm server
+### 2. Start the npm server
 `npm start`
